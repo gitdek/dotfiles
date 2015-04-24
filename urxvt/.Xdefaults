@@ -1,0 +1,68 @@
+!  ██     ██      ██           ████                    ██   ██          
+! ░░██   ██      ░██          ░██░                    ░██  ░██          
+!  ░░██ ██       ░██  █████  ██████  ██████   ██   ██ ░██ ██████  ██████
+!   ░░███     ██████ ██░░░██░░░██░  ░░░░░░██ ░██  ░██ ░██░░░██░  ██░░░░ 
+!    ██░██   ██░░░██░███████  ░██    ███████ ░██  ░██ ░██  ░██  ░░█████ 
+!   ██ ░░██ ░██  ░██░██░░░░   ░██   ██░░░░██ ░██  ░██ ░██  ░██   ░░░░░██
+!  ██   ░░██░░██████░░██████  ░██  ░░████████░░██████ ███  ░░██  ██████ 
+! ░░     ░░  ░░░░░░  ░░░░░░   ░░    ░░░░░░░░  ░░░░░░ ░░░    ░░  ░░░░░░  
+!
+!  ▓▓▓▓▓▓▓▓▓▓
+! ░▓ author ▓ xero <x@xero.nu>
+! ░▓ code   ▓ http://code.xero.nu/dotfiles
+! ░▓ mirror ▓ http://git.io/.files
+! ░▓▓▓▓▓▓▓▓▓▓
+! ░░░░░░░░░░
+!
+! █▓▒░ fonts
+urxvt*font: xft:gohufont:size=11:antialias=true
+urxvt*boldFont: xft:gohufont:size=11:antialias=true
+urxvt*lineSpace: -1
+
+! █▓▒░ interface
+urxvt*scrollBar: false
+urxvt*transparent: false
+!urxvt*shading: 38
+
+! █▓▒░ scorcerer colors
+*.foreground:   #c2c2b0
+*.background:   #222222
+*.cursorColor:  #c2c2b0
+! black
+*.color0:       #222222
+*.color8:       #272822
+! red
+*.color1:       #aa4450
+*.color9:       #ff6a6a
+! green
+*.color2:       #719611
+*.color10:      #b1d631
+! yellow
+*.color3:       #cc8800
+*.color11:      #ff9800
+! blue
+*.color4:       #6688aa
+*.color12:      #90b0d1
+! magenta
+*.color5:       #8f6f8f
+*.color13:      #8181a6
+! cyan
+*.color6:       #528b8b
+*.color14:      #87ceeb
+! white
+*.color7:       #d3d3d3
+*.color15:      #c1cdc1
+
+! █▓▒░ clipboard
+urxvt.perl-ext-common: default,clipboard,keyboard-select
+urxvt.keysym.M-Escape: perl:keyboard-select:activate
+urxvt.keysym.M-c:   perl:clipboard:copy
+urxvt.keysym.C-v:   perl:clipboard:paste
+urxvt.keysym.M-C-v: perl:clipboard:paste_escaped
+urxvt.clipboard.copycmd:  xsel -ib
+urxvt.clipboard.pastecmd: xsel -ob
+
+! █▓▒░ misc
+urxvt.saveLines: 4095
+urxvt.iso14755: false
+!URxvt*altSendsEscape: true
