@@ -1,0 +1,94 @@
+--[[ GRAPH widget v1.1 by wlourf (07.01.2011)
+	this widget draws some graphs with some effects 
+	http://u-scripts.blogspot.com/2010/10/graph-widget.html
+	
+To call the script in a conky, use, before TEXT
+	lua_load /path/to/the/script/graph.lua
+	lua_draw_hook_pre main_graph
+and add one line (blank or not) after TEXT
+
+
+Parameters are :
+3 parameters are mandatory
+name		- the name of the conky variable to display,
+			  for example for {$cpu cpu0}, just write name="cpu"
+arg			- the argument of the above variable,
+			  for example for {$cpu cpu1}, just write arg="cpu1"
+		  	  arg can be a numerical value if name=""
+max			- the maximum value the above variable can reach,
+			  for example for {$cpu cpu1}, just write max=100 or less or more
+	
+Optional parameters:
+x,y 		- coordinates of the bottom-left corner of the graph,
+              relative to the top-left corner of the conky window 
+			  default =  bottom-left corner of the conky window
+width       - width of the graph, default = 100 pixels
+height      - height of the graph, default = 20 pixels
+nb_values   - number of values to display in the graph, default=width 
+              i.e. 1 pixel for 1 value
+autoscale   - if set to true, calculate the max valeu of the y axis and
+              doesn't use the max parameter above, default=false
+skew_x      - skew graph around x axis, défaut = 0
+skew_y      - skew graph around y axis, défaut = 0
+angle	    - angle of rotation of the graph in degress, default = 0
+              i.e. a horizontal graph)
+inverse     - if set to true, graph are draw from right to left, default=false
+background  - if set to false, background is not drawn, default=true
+foreground  - if set to false, foreground is not drawn, default=true
+              foreground = plain graph
+bg_bd_size  - size of the border of the background, default=0=no border
+fg_bd_size  - size of the border of the foreground, default=0=no border
+
+
+Colours tables below are defined into braces :
+{position in the gradient (0 to 1), colour in hexadecimal, alpha (0 to 1)}
+example for a single colour table : 
+{{0,0xFFAA00,1}} position parameter doesn't matter
+example for a two-colours table : 
+{{0,0xFFAA00,1},{1,0x00AA00,1}} or {{0.5,0xFFAA00,1},{1,0x00AA00,1}}
+example for a three-colours table : 
+{{0,0xFFAA00,1},{0.5,0xFF0000,1},{1,0x00AA00,1}}
+
+bg_colour	- colour table for background,
+			  default = {{0,0x000000,.5},{1,0xFFFFFF,.5}}
+fg_colour	- colour table for foreground,
+			  default = {{0,0x00FFFF,1},{1,0x0000FF,1}}
+bg_bd_colour- colour table for background border,
+			  default = {{1,0xFFFFFF,1}}			  
+fg_bd_colour- colour table for foreground border,
+			  default = {{1,0xFFFF00,1}}			  
+
+bg_orientation, bg_bd_orientation, fg_orientation, fg_bd_orientation,
+        	- "orientation" defines the starting point of the gradient,
+        	  default="nn"
+			  there are 8 available starting points : 
+			  "nw","nn","ne","ee","se","ss","sw","ww"
+			  (n for north, w for west ...)
+			  theses 8 points are the 4 corners + the 4 middles of graph
+			  so a gradient "nn" will go from "nn" to "ss"
+			  a gradient "nw" will go from "nw" to "se"
+
+draw_me     - if set to false, graph is not drawn (default = true)
+              it can be used with a conky string, if the string returns 1, the graph is drawn :
+              example : "${if_empty ${wireless_essid wlan0}}${else}1$endif",
+              
+v1.0 (31/10/2010) original release
+v1.1 (07/01/2011) Add draw_me parameter and correct memory leaks, thanks to "Creamy Goodness"
+                  text is parsed inside the function, not in the array of settings
+
+--      This program is free software; you can redistribute it and/or modify
+--      it under the terms of the GNU General Public License as published by
+--      the Free Software Foundation version 3 (GPLv3)
+--     
+--      This program is distributed in the hope that it will be useful,
+--      but WITHOUT ANY WARRANTY; without even the implied warranty of
+--      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+--      GNU General Public License for more details.
+--     
+--      You should have received a copy of the GNU General Public License
+--      along with this program; if not, write to the Free Software
+--      Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+--      MA 02110-1301, USA.		
+
+]]
+

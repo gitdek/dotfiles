@@ -1,0 +1,39 @@
+imlib_cache_size 0
+#------------------------- Windows Settings
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_type normal
+own_window_transparent no
+own_window_hints undecorated,sticky,below,skip_taskbar,skip_pager
+own_window_colour black
+own_window_class Conky
+own_window_title Simple Default Conky
+
+### ARGB can be used for real transparency
+### NOTE that a composite manager is required for real transparency.
+### This option will not work as desired (in most cases) in conjunction with own_window_type normal
+##### When ARGB visuals are enabled, this use this to modify the alpha value
+##### Use: own_window_type normal
+##### Use: own_window_transparent no
+own_window_argb_visual yes
+own_window_argb_value 240
+
+#------------------------- Location
+minimum_size 1920 165
+gap_x 0
+gap_y 150
+
+#------------------------- BORDER
+draw_borders no
+draw_outline no
+stippled_borders 0
+border_inner_margin 0
+border_outer_margin 0
+border_width 0
+
+#------------------------- OTHER
+background yes
+update_interval 3600
+
+TEXT
+${image /home/dek/.conkyconfig/img/bg.png -p 0,0 -s 1920x165}

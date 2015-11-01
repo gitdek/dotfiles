@@ -1,0 +1,48 @@
+#------------------------- Windows Settings
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_type normal
+own_window_transparent no
+own_window_hints undecorated,sticky,below,skip_taskbar,skip_pager
+own_window_colour black
+own_window_class Conky
+own_window_title TEST
+
+double_buffer yes
+
+#------------------------- Location
+minimum_size 1200 800
+gap_x 500
+gap_y 500
+
+#------------------------- FONT
+use_xft yes
+xftfont Monofur:bold:size=8
+xftalpha 0.8 	# Alpha of Xft font. Must be a value at or between 1 and 0 ###
+override_utf8_locale yes
+draw_shades yes
+default_shade_color black
+draw_outline no
+uppercase no
+
+#------------------------- BORDER
+draw_borders no
+draw_outline no
+stippled_borders 0
+border_inner_margin 0
+border_outer_margin 0
+border_width 0
+
+#------------------------- OTHER
+background no
+update_interval 1
+
+lua_load ~/.conkyconfig/lua/rings.lua
+lua_draw_hook_post main_rings
+
+
+draw_graph_borders no
+
+TEXT
+This is a test field, play time...
+

@@ -1,0 +1,69 @@
+imlib_cache_size 0
+#------------------------- Windows Settings
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_type normal
+own_window_transparent no
+own_window_hints undecorated,sticky,below,skip_taskbar,skip_pager
+own_window_colour black
+own_window_class Conky
+own_window_title Simple Default Conky
+own_window_argb_visual yes
+own_window_argb_value 0
+double_buffer yes
+
+#------------------------- Location
+minimum_size 313 165
+maximum_width 313
+gap_x 939
+gap_y 150
+
+#------------------------- FONT
+use_xft yes
+xftfont Monofur:bold:size=8
+xftalpha 0.8 	# Alpha of Xft font. Must be a value at or between 1 and 0 ###
+override_utf8_locale yes
+draw_shades yes
+default_shade_color black
+draw_outline no
+uppercase no
+
+#------------------------- Colors
+default_color DCDCDC 		#220 220 220	Gainsboro
+
+#------------------------- BORDERS
+draw_borders no
+draw_outline no
+stippled_borders 0
+border_inner_margin 0
+border_outer_margin 0
+border_width 0
+
+draw_graph_borders no
+
+#------------------------- OTHER
+text_buffer_size 256
+use_spacer none
+background no
+use_spacer none
+update_interval 3
+
+#------------------------- LUA
+lua_load /home/dek/.conkyconfig/lua/rings.lua
+lua_load /home/dek/.conkyconfig/lua/ring.lua
+lua_load /home/dek/.conkyconfig/lua/files_graph.lua
+lua_load /home/dek/.conkyconfig/lua/hdd_graph.lua
+lua_draw_hook_pre main_graph
+lua_load /home/dek/.conkyconfig/lua/files_ring_clock.lua
+lua_draw_hook_post main
+
+TEXT
+${goto 25}${font Monofur:size=8}DISK${font} ${hr 1}
+${goto 90}${diskiograph 38,172 fef7b2 e18522}
+${goto 30}${voffset 5}/${goto 82}: ${fs_size /}   ${fs_used_perc /} % ${alignr}${fs_bar 6,80 /}
+${goto 30}/home${goto 82}: ${fs_size /home}   ${fs_used_perc /home} % ${alignr}${fs_bar 6,80 /home}
+${goto 30}/storage${goto 82}: ${fs_size /storage}   ${fs_used_perc /storage} % ${alignr}${fs_bar 6,80 /storage}
+${goto 30}/media/raid0${goto 82}: ${fs_size /media/raid0}   ${fs_used_perc /media/raid0} % ${alignr}${fs_bar 6,80 /media/raid0}
+${goto 30}/dev/sda${goto 100}Read: ${diskio_read /dev/sda}${goto 200}Write: ${diskio_write /dev/sda}
+${goto 30}/dev/sdb${goto 100}Read: ${diskio_read /dev/sdb}${goto 200}Write: ${diskio_write /dev/sdb}
+${image /home/dek/.conkyconfig/img/files.png -p 0,15 -s 45x45}

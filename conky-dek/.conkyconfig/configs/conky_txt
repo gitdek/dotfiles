@@ -1,0 +1,55 @@
+imlib_cache_size 0
+#------------------------- Windows Settings
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_type normal
+own_window_transparent no
+own_window_hints undecorated,sticky,below,skip_taskbar,skip_pager
+own_window_colour black
+own_window_class Conky
+own_window_title Simple Default Conky
+own_window_argb_visual yes
+own_window_argb_value 0
+double_buffer yes
+
+#------------------------- Location
+minimum_size 100 40
+maximum_width 1020
+gap_x 85
+gap_y 730
+
+#------------------------- FONT
+use_xft yes
+xftfont GE Inspira:bold:size=20
+xftalpha 0.1	# Alpha of Xft font. Must be a value at or between 1 and 0 ###
+override_utf8_locale yes
+draw_shades no
+default_shade_color black
+draw_outline yes
+default_outline_color black
+uppercase no
+
+alignment top_left
+
+#------------------------- Colors
+default_color DCDCDC
+color0 1793d0			#Special Color
+color1 DDDDDD
+color2 AAAAAA
+color3 888888
+color4 EE2C2C           #firebrick2
+#------------------------- BORDERS
+draw_borders no
+draw_outline no
+stippled_borders 0
+border_inner_margin 0
+border_outer_margin 0
+border_width 0
+
+#------------------------- OTHER
+use_spacer none
+background no
+update_interval 3
+
+TEXT
+${font GE Inspira:bold:pixelsize=30}dek${font Common:pixelsize=30}${color3}❱${font GE Inspira:pixelsize=30}${color0}oppenheimer

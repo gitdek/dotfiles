@@ -1,0 +1,60 @@
+imlib_cache_size 0
+#------------------------- Windows Settings
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_type normal
+own_window_transparent no
+own_window_hints undecorated,sticky,below,skip_taskbar,skip_pager
+own_window_colour black
+own_window_class Conky
+own_window_title Simple Default Conky
+own_window_argb_visual yes
+own_window_argb_value 0
+double_buffer yes
+
+#------------------------- Location
+minimum_size 313 165
+maximum_width 313
+gap_x 70
+gap_y 150
+
+#------------------------- FONT
+use_xft yes
+xftfont Monofur:bold:size=8
+xftalpha 0.8 	# Alpha of Xft font. Must be a value at or between 1 and 0 ###
+override_utf8_locale yes
+draw_shades yes
+default_shade_color black
+draw_outline no
+uppercase no
+
+#------------------------- Colors
+default_color DCDCDC 		#220 220 220	Gainsboro
+color0 1793d0			#Special Color
+
+#------------------------- BORDERS
+draw_borders no
+draw_outline no
+stippled_borders 0
+border_inner_margin 0
+border_outer_margin 0
+border_width 0
+
+#------------------------- OTHER
+text_buffer_size 256
+use_spacer none
+background no
+use_spacer none
+update_interval 3
+
+TEXT
+${voffset 25}${GOTO 50}${font}System
+${GOTO 50}${font}Uptime: ${font Monofur:size=8}${uptime_short}${GOTO 175}(${color0}${exec /home/dek/.conkyconfig/scripts/uptime.sh}${color})
+
+
+${font Monofur:size=8}${GOTO 50}${font}Processes: ${font Monofur:size=8}${processes} (${color0}${running_processes} ${color}running)
+${GOTO 50}${font}Threads: ${font Monofur:size=8}${running_threads}
+${GOTO 50}${font}Connections: ${font Monofur:size=8}${tcp_portmon 1 65535 count}
+
+${GOTO 50}${font}GPU: ${font Monofur:size=8}${nvidia temp}°C | ${font Monofur:size=8}${nvidia gpufreq}Ghz
+${image /home/dek/.conkyconfig/img/system.png -p 0,15 -s 45x45}

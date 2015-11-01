@@ -1,0 +1,4 @@
+${goto 50}${color0}[--datatype=AR]
+${goto 50}${color1}[--datatype=TI]
+
+${voffset 9}${goto 50}[--datatype=PT] / [--datatype=LE]${alignr 5}[--datatype=PP]%

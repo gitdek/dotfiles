@@ -1,0 +1,3 @@
+#!/bin/bash
+kill `expr match "\`ps ax | grep conky_test \`" '\([0-9]*\)'`
+exit

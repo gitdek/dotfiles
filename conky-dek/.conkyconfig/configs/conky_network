@@ -1,0 +1,70 @@
+imlib_cache_size 0
+#------------------------- Windows Settings
+# Create own window instead of using desktop (required in nautilus)
+own_window yes
+own_window_type normal
+own_window_transparent no
+own_window_hints undecorated,sticky,below,skip_taskbar,skip_pager
+own_window_colour black
+own_window_class Conky
+own_window_title Simple Default Conky
+own_window_argb_visual yes
+own_window_argb_value 0
+double_buffer yes
+
+#------------------------- Location
+minimum_size 313 165
+maximum_width 313
+gap_x 1252
+gap_y 150
+
+#------------------------- FONT
+use_xft yes
+xftfont Monofur:bold:size=8
+xftalpha 0.4 	# Alpha of Xft font. Must be a value at or between 1 and 0 ###
+override_utf8_locale yes
+draw_shades yes
+default_shade_color black
+draw_outline no
+uppercase no
+
+#------------------------- Colors
+default_color DCDCDC 		#220 220 220	Gainsboro
+color0 1793d0			#Special Color
+color1 DDDDDD			#Shades of grey
+color2 AAAAAA
+color3 888888
+color4 B6E2F7
+color5 0D5274
+
+#------------------------- BORDERS
+draw_borders no
+draw_outline no
+stippled_borders 0
+border_inner_margin 0
+border_outer_margin 0
+border_width 0
+
+draw_graph_borders no
+
+#------------------------- OTHER
+text_buffer_size 256
+use_spacer none
+background no
+use_spacer none
+update_interval 2
+
+# default_bar_size 257 5
+
+lua_load /home/dek/.conkyconfig/lua/net_graph.lua
+lua_draw_hook_pre main_graph
+
+TEXT
+${voffset 27}${GOTO 50}${font}Network
+${offset 240}${image /home/dek/.conkyconfig/img/networkhigh.png -p 0,15 -s 45x45}
+#${GOTO 95}${font Monofur:size=7}${addr eth0}${font}
+${GOTO 40}${upspeedgraph eth0 32,110 000000 1793d0} ${GOTO 200}${downspeedgraph eth0 32,110 000000 0F628B}
+${GOTO 20}${font}Tx: ${font Monofur:size=8} ${totalup eth0} (${color 1793d0}${upspeed eth0}/s${color}) $alignr${font}Rx: ${font Monofur:size=8} ${totaldown eth0} (${color 0F628B}${downspeed eth0}/s${color}) 
+${GOTO 20}${hr 2}
+${GOTO 20}${color}${font}eth0: ${GOTO 80}${font Monofur:size=8}${color4}${addr eth0} ${GOTO 160}${color5}${execi 600 wget http://ipecho.net/plain -O - -q ; echo;}
+${GOTO 20}${color}${font}he-ipv6: ${GOTO 80}${font Monofur:size=8}${color5}${texeci 600 curl -6 http://v6.ipv6-test.com/api/myip.php; echo;}
