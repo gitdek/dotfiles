@@ -1,5 +1,11 @@
+" modified Tue Jul 14 00:06:26 EDT 2015
 " no vi-compatible
 set nocompatible
+set background=dark
+filetype on
+filetype plugin on
+filetype indent on
+set autowrite
 
 " Setting up Vundle - the vim plugin bundler
 let iCanHazVundle=1
@@ -13,8 +19,9 @@ if !filereadable(vundle_readme)
 endif
 
 " required for vundle
-filetype off
+" filetype off
 
+set showcmd
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
@@ -106,10 +113,18 @@ filetype plugin on
 filetype indent on
 
 " tabs and spaces handling
-set expandtab
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
+set smarttab
+set expandtab
+set smartindent
+set ruler
+set relativenumber
+set ttyfast
+set autoread
+set more
+set cursorline!
 
 " tablength exceptions
 autocmd FileType html setlocal shiftwidth=2 tabstop=2 softtabstop=2
@@ -187,6 +202,7 @@ map <F11> :Dbg down<CR>
 map <F12> :Dbg up<CR>
 
 " CtrlP (new fuzzy finder)
+
 let g:ctrlp_map = ',e'
 nmap ,g :CtrlPBufTag<CR>
 nmap ,G :CtrlPBufTagAll<CR>
@@ -343,3 +359,13 @@ vmap <expr> D DVB_Duplicate()
 "let g:airline_symbols.branch = '⭠'
 "let g:airline_symbols.readonly = '⭤'
 "let g:airline_symbols.linenr = '⭡'
+"
+"
+
+set history=1000
+" added Tue Jul 14 00:03:21 EDT 2015
+
+set hidden
+" don't unload buffer when it is abandoned. added Tue Jul 14 00:03:32 EDT 2015
+
+map <F2> :TOhtml<enter>:wq<enter>:n<enter><F2>
