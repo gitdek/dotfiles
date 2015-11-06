@@ -1,0 +1,31 @@
+[core]
+	autocrlf = false
+	filemode = false
+	bare = false
+[user]
+	email = you@you.com
+	name = yourname
+[alias]
+	lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
+	a = !git add . && git status
+	au = !git add -u . && git status	
+	aa = !git add . && git add -u . && git status
+	s = status
+	c = commit
+	cm = commit -m
+	ac = !git add . && git commit
+	acm = !git add . && git commit -m
+	l = log --graph --all --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(white)- %an, %ar%Creset'
+	ll = log --stat --abbrev-commit
+	d = diff --color-words
+	dh = diff --color-words head
+	master = checkout master
+	alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
+	tgz = !git archive --format=tar.gz HEAD >
+  
+[rebase]
+	autosquash = true
+[push]
+	default = simple
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
