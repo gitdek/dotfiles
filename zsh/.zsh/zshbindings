@@ -1,1 +1,22 @@
-/home/dek/.zsh/zshbindings
+# Tue Jul 14 03:08:13 EDT 2015
+#
+# This file is a part of my zsh configuration. It's sourced from the .zshrc
+# file. It contains my key bindings
+
+
+bindkey -v  #vi keybindings
+
+# press "ctrl-e d" to insert the actual date in the form yyyy-mm-dd
+_bkdate() { BUFFER="$BUFFER$(today)"; CURSOR=$#BUFFER; }
+zle -N _bkdate
+bindkey '^Ed' _bkdate
+
+run-with-sudo () { LBUFFER="sudo $LBUFFER" }
+zle -N run-with-sudo
+bindkey '^N' run-with-sudo
+
+#zle -N autosuggest-tab
+
+bindkey '^T' autosuggest-toggle
+bindkey '^f' vi-forward-blank-word
+

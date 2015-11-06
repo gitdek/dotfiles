@@ -1,0 +1,72 @@
+# Tue Jul 14 03:10:41 EDT 2015
+#
+# This file is a part of my zsh configuration. It's sourced from the .zshrc
+# file. It contains my key bindings
+
+
+zmodload zsh/complist
+
+
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*' insert-unambiguous true
+
+# Make completion (yeah im getting fucking lazy)
+#compile=(install clean remove uninstall deinstall)
+#compctl -k compile make
+
+zstyle ':completion:*' use-cache on 
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
+# Fuzzy matching of completions for when you mistype them:
+zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*:match:*' original only
+zstyle ':completion:*:approximate:*' max-errors 3 numeric
+
+# Completing process IDs with menu selection:
+zstyle ':completion:*:*:kill:*' menu yes select
+zstyle ':completion:*:kill:*'   force-list always
+
+compctl -k ping telnet ncftp host nslookup irssi rlogin ftp weechat-curses 
+
+compctl -g '*.(pdf|ps|PDF|PS)' + -g '*(-/)' evience xpdf
+compctl -g '*.(jpg|JPG|jpeg|JPEG|gif|GIF|png|PNG|bmp)' + -g '*(-/)' eog feh gimp
+compctl -g "*.html *.htm" + -g "*(-/) .*(-/)" + -H 0 '' w3m lynx links links2 elinks firefox dillo
+#compctl -g "*.scala" + -g "*(-/) .*(-/)" + -H 0 '' scalac
+compctl -g "*.rar *.tar *.bz2 *.gz *.ace *.deb *.izs *.tar *.tbz2 *.zip *.Z *.shar" + -g "*(-/) .*(-/)" + -H 0 '' spex
+
+# highlight matching part of available completions
+zstyle ':completion:*' list-colors 'reply=( "=(#b)(*$PREFIX)(?)*=00=$color[green]=$color[bg-green]" )'
+
+# add colors to completions
+# # general completion
+# #--------------------------------------------------
+zstyle ':completion:::::' completer _complete _approximate
+_force_rehash() {
+  (( CURRENT == 1 )) && rehash
+  return 1    # Because we didn't really complete anything
+}
+zstyle ':completion:::::' completer _force_rehash _complete _approximate
+
+zstyle ':completion:*:descriptions' format $$$'%{\e[0;31m%}completing %B%d%b%{\e[0m%}'
+zstyle ':completion:*:messages' format '%d'
+zstyle ':completion:*' format $'%{\e[0;31m%}completing %B%d%b%{\e[0m%}'
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' verbose yes
+zstyle ':completion:*' menu select
+zstyle ':completion:*' verbose yes
+zstyle -e ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX + $#SUFFIX) / 3 )) )'
+zstyle ':completion:*:descriptions' format "- %d -"
+zstyle ':completion:*:corrections' format "- %d - (errors %e})"
+zstyle ':completion:*:default' list-prompt '%S%M matches%s'
+
+
+
+
+zstyle ':completion:*:*:cd:*:directory-stack' menu yes select=1 interactive
+# If there are more than 5 options, allow selecting from a menu with
+# arrows (case insensitive completion!).
+zstyle ':completion:*-case' menu select=1 interactive
+
+zstyle ':completion:*:manuals' separate-sections true
+zstyle ':completion:*:manuals.(^1*)' insert-sections true
+

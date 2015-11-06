@@ -1,1 +1,333 @@
-/home/dek/.zsh/zshfunctions
+
+bld='\e[1m'
+rst='\e[0m'
+inv='\e[7m'
+# This file is a part of my zsh configuration. It's sourced from the .zshrc
+# file. It contains some custom (or not) functions
+
+# Create a /overview/ of all available function()'s; the description for
+# each funtion() *must* be the first line above the string `function'!
+# Otherwise it wont work.
+# Display all function()'s with her descriptions
+function funlist()
+{
+  grep -B 1 "^function" $HOME/.zsh/zshfunctions | \
+  grep -v "^\-\-$" | \
+  awk '{ if(/^#/) { gsub(/^#[:space:]*/, ""); ht=$0 }; getline; gsub(/ ?\(\)/, ":"); printf("\033[33m->\033[0m \033[1m\033[32m%-30s\033[0m \033[31m%s\033[0m\n", $2, ht); }' | \
+  sort
+}
+
+# shameless stolen from http://ft.bewatermyfriend.org/comp/data/zsh/zfunct.html
+# MISC: zurl() create small urls via tinyurl.com needs wget, grep and sed. yes, it's a hack ;)
+function zurl() {
+  [[ -z ${1} ]] && print "please give an url to shrink." && return 1
+    local url=${1}
+    local tiny="http://tinyurl.com/create.php?url="
+    # print "${tiny}${url}" ; return
+    wget -O- -o /dev/null "${tiny}${url}"|grep -Eio "copy\('http://tinyurl.com/.*'"|grep -o "http://.*"|sed s/\'//
+}
+
+
+
+# DOC: Globbing is simple? Sure .. See zshexpn(1) /Glob Qualifiers for details and come back ;) 
+function jlob() {
+echo "
+     / directories
+      . plain files
+      @ symbolic links
+      = sockets
+      p named pipes (FIFOs)
+      * executable plain files (0100)
+      % device files (character or block special)
+      %b block special files
+      %c character special files
+      r owner-readable files (0400)
+      w owner-writable files (0200)
+      x owner-executable files (0100)
+      A group-readable files (0040)
+      I group-writable files (0020)
+      E group-executable files (0010)
+      R world-readable files (0004)
+      W world-writable files (0002)
+      X world-executable files (0001)
+      s setuid files (04000)
+      S setgid files (02000)
+      t files with the sticky bit (01000)
+$bld print *(m-1)       	$rst$inv # Files that have been modified prior to a day.$rst
+$bld print *(a1)            $rst$inv # Files were accessed ago.$rst
+$bld print *(@)             $rst$inv # Only links$rst
+$bld print *(Lk+50)         $rst$inv # Files more than 50 kilobytes$rst
+$bld print *(Lk-50)         $rst$inv # Files are smaller than 50 kilobytes$rst
+$bld print **/*.c           $rst$inv # All * .c - files under \$PWD$rst
+$bld print **/*.c~file.c    $rst$inv # All *.c - files, but not 'file.c'$rst
+$bld print (foo|bar).*      $rst$inv # All files with 'foo' and / or 'bar' at the beginning$rst
+$bld print *~*.*            $rst$inv # Only files without '.' in name$rst
+$bld chmod 644 *(.^x)       $rst$inv # make all non - executable files publically readable$rst
+$bld print -l *(.c|.h)      $rst$inv # Only files with the suffix '.c ' and / or '.h'$rst
+$bld print **/*(g:users:)   $rst$inv # All files / directories group >users<$rst
+$bld echo /proc/*/cwd(:h:t:s/self//) $rst$inv # Similar to >ps ax | awk '{print $ 1}'<$rst"
+      
+}
+
+# FUN: Making the right decisions is hard :>
+function helpme()
+{
+  print "Please wait.. i'll think about.."
+  for i in 1 2 3; do echo -ne "."; sleep 0.3; done
+  if [ $RANDOM -gt $RANDOM ]
+  then
+    print "Yes\!"
+  else
+    print "No\!"
+  fi
+}
+
+# ARCHIVE: extracts archived files (maybe)
+function spex ()
+{
+        if [[ -f "$1" ]]
+        then
+                case "$1" in
+                        *.tar.bz2) tar -xvjf "$1" ;;
+                        *.tar.gz) tar -xvzf "$1" ;;
+                        *.ace) unace e "$1" ;;
+                        *.rar) unrar x "$1" ;;
+                        *.deb) ar -x "$1" ;;
+                        *.bz2) bzip2 -d "$1" ;;
+                        *.lzh) lha x "$1" ;;
+                        *.gz) gunzip -d "$1" ;;
+                        *.tar) tar -xvf "$1" ;;
+                        *.tgz) gunzip -d "$1" ;;
+                        *.tbz2) tar -jxvf "$1" ;;
+                        *.zip) unzip "$1" ;;
+                        *.Z) uncompress "$1" ;;
+                        *.shar) sh "$1" ;;
+                        *.lzma) lzma -d "$1" ;;
+                        *.xz) 7za x "$1" ;;
+                        *) echo "'"$1"' Error. Please go away" ;;
+                esac
+        else
+                echo "'"$1"' is not a valid file"
+        fi
+}
+
+# FUN: my is bigger than yours :)
+function dick()
+{
+echo `uptime|grep days|sed 's/.*up \([0-9]*\) day.*/\1\/10+/'; cat \
+/proc/cpuinfo|grep '^cpu MHz'|awk '{print $4"/30 +";}';free|grep \
+'^Mem'|awk '{print $3"/1024/3+"}'; df -P -k -x nfs | grep -v \
+1k | awk '{if ($1 ~ "/dev/(scsi|sd)"){ s+= $2} s+= $2;} END \
+{print s/1024/50"/15+70";}'`|sed 's/\,/\./'|bc|sed 's/\(.$\)/.\1cm/'
+}
+
+# MISC: mkdir && cd
+function mcd()
+{
+  test -z "$1" && echo mkcd: no path given && return
+  test -d "$1" && print "mkcd: Directory $1 already exists"
+  mkdir -p -- "$1"
+  cd -- "$1"
+}
+
+# SEARCH: search for various types or README file in dir and display them in $PAGER
+function readme()
+{
+        if [[ -x `which vimpager` ]]; then
+            local VPAGER=vimpager
+        else
+            local VPAGER=$PAGER
+        fi
+        local files
+        files=(./(#i)*(read*me|lue*m(in|)ut)*(ND))
+        if (($#files))
+        then $VPAGER $files
+        else
+                print 'No README files. Please lart \$MAINTAINER!'
+        fi
+}
+
+# ARCHIVE: Create a tar.gz from given directory
+function ctarz()
+{
+  local archive_name
+  archive_name="$1.tar.gz"
+  archive_name=${archive_name/\//}
+  tar cvfz "$archive_name" "$1"
+  echo "Created archive $archive_name"
+}
+
+# ARCHIVE: Create a tar.bz2 from given directory
+function ctarj()
+{
+  local archive_name
+  archive_name="$1.tar.bz2"
+  archive_name=${archive_name/\//}
+  tar cvfj "$archive_name" "$1"
+  echo "Created archive $archive_name"
+}
+
+
+if [[ -e /etc/debian_version ]]; then
+# HOOK: Calls sudo if nessecary and rehash
+function aptitude()
+{
+    cmd=("search" "show" "why");
+    if [[ ${cmd[(i)$1]} -le ${#cmd} ]]; then
+        command aptitude $@
+    else 
+        if (( EUID != 0 )); then
+            command sudo aptitude $@
+        else
+
+            command aptitude $@
+        fi
+        rehash
+    fi
+}
+fi
+
+# MISC: Clear all iptable rules
+function iptables-clear()
+{
+    sudo zsh -c "iptables -F; iptables -X; iptables -t nat -F; iptables -t nat -X; iptables -t mangle -F; iptables -t mangle -X; iptables -P INPUT ACCEPT; iptables -P FORWARD ACCEPT; iptables -P OUTPUT ACCEPT "
+}
+
+# MISC: Play youtube video in mplayer
+ytplay() { mplayer -cache 5000 -idx -ao pulse `youtube-dl -g "$1"` }
+
+# NET: Grab all ips configured
+function all-ip { /sbin/ifconfig | grep "inet addr" | grep -v "127.0.0.1" | awk -F: '{print $2}' | awk '{print $1}'; }
+
+# NET: External ip6
+function ext-ip6 () { curl -6 http://v6.ipv6-test.com/api/myip.php; echo; }
+
+# NET: External ip4
+function ext-ip () { wget http://ipecho.net/plain -O - -q ; echo; }
+
+# MISC: Get the absolute path
+function abs_path {
+    (cd "${1%/*}" &>/dev/null && printf "%s/%s" "$(pwd)" "${1##*/}")
+}
+
+# MISC: Uses gitignore.io API to pull a generate .gitignore file
+function gitignore() { curl -L -s https://www.gitignore.io/api/$@ ;}
+
+# NET: Convert a curl response into formatted json
+function curljson {
+    curl -s $1 | underscore $2
+}
+
+# MISC: tail a file and highlight argument
+function tailhighlight() { 
+# tail -f $1 | perl -pe "s/$2/\e[1;31;43m$&\e[0m/g"
+    tail -f $1 | sed "s/$2/\x1B[1;31;43m&\x1B[0m/g";
+}
+
+# MISC: Save a screenshot to the clipboard.
+function setclip_screenshot { 
+    /usr/bin/xfce4-screenshooter --fullscreen --clipboard
+    alert-popup "screengrab copied to clipboard."
+}
+
+
+# NET: remote ftp fs
+function ftp-fs {
+    local host=$1
+        local auth=$2
+        local dest=$3
+        curlftpfs $host $dest -o user=$auth -o allow_other -o ssl -o no_verify_peer -o no_verify_hostname
+}
+
+
+# FUN: Grab a random Mitch Hedberg quote and display it in console and with a notify-send alert.
+function mitch_hedberg_quote_web {
+    type curl >/dev/null 2>&1 || { echo >&2 "I require curl.  Aborting."; exit 1; }
+    MITCHISMS=$(curl --silent https://gist.githubusercontent.com/gitdek/38cb982379ce70c073c5/raw/8064b215de6d07507606f59f8551b113713f2df2/mitch_quotes.txt | shuf -n 1)
+    if hash notify-send 2>/dev/null; then
+        notify-send --urgency=low -i info $MITCHISM
+    fi
+    echo $MITCHISMS
+}
+# FUN: This is specific to sending a quote from mitch_hedberg_quote_web to HipChat using the API.
+function mitch_hedberg_quote_hipchat {
+
+MITCHISM=$(mitch_hedberg_quote_web |  python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))')
+    # Grab a random quote and convert it into json for the API for hipchat.
+    #
+    #QOTD=$(shuf -n 1 $MITCHISM | python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))')
+
+    #echo "waaat $MITCHISM"
+    curl -d '{"color": "green", "message": '$MITCHISM' , "notify": false, "message_format": "text"}' -H 'Content-Type: application/json' https://api.hipchat.com/v2/room/$HIPCHAT_API_ROOM/notification\?auth_token\=$HIPCHAT_API_AUTH_TOKEN
+
+}
+
+
+#### MARKS
+#
+#
+# Used to mark (as in bookmark) directories.
+#
+export MARKPATH=$HOME/.marks # Usually exports are in ~/.zsh/zshexports but this is an exception.
+
+# MISC: Jump to that mark.
+function jump { 
+    cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+}
+
+## eg. mark something will mark the current directory as 'alice' for future use(jump alice)
+## If in the directory /var/www/bob/ and we run 'mark' without any arguments it will name it after the current directory(bob)
+# MISC: Mark the current directory with an optional alias.
+function mark { 
+    mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
+}
+
+# MISC: Remove a mark.
+function unmark { 
+    rm -i "$MARKPATH/$1"
+}
+
+# MISC: List all the marks in a clean format.
+function marks {
+    ls -l "$MARKPATH" | sed 's/  / /g' | cut -d' ' -f9- | sed 's/ -/\t-/g' && echo
+}
+
+
+_completemarks() {
+    reply=( $(ls $MARKPATH/) )
+}
+
+# NET: Use ix.io API
+#     ix hello.txt              # paste file (name/ext will be set).
+#     echo Hello world. | ix    # read from STDIN (won't set name/ext).
+#     ix -n 1 self_destruct.txt # paste will be deleted after one read.
+#     ix -i ID hello.txt        # replace ID, if you have permission.
+#     ix -d ID
+ix() {
+    local opts
+    local OPTIND
+    [ -f "$HOME/.netrc" ] && opts='-n'
+    while getopts ":hd:i:n:" x; do
+        case $x in
+            h) echo "ix [-d ID] [-i ID] [-n N] [opts]"; return;;
+            d) $echo curl $opts -X DELETE ix.io/$OPTARG; return;;
+            i) opts="$opts -X PUT"; local id="$OPTARG";;
+            n) opts="$opts -F read:1=$OPTARG";;
+        esac
+    done
+    shift $(($OPTIND - 1))
+    [ -t 0 ] && {
+    local filename="$1"
+    shift
+    [ "$filename" ] && {
+    curl --basic -u dek:dek $opts -F f:1=@"$filename" $* ix.io/$id
+    return
+}
+echo "^C to cancel, ^D to send."
+        }
+        curl $opts -F f:1='<-' $* ix.io/$id
+    }
+
+compctl -K _completemarks jump
+compctl -K _completemarks unmark
+

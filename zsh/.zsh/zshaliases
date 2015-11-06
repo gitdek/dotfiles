@@ -1,1 +1,63 @@
-/home/dek/.zsh/zshaliases
+# zsh aliases
+#
+
+alias zshconfig="gvim ~/.zshrc"
+
+# most used commands in history
+alias top10='print -l $$${(o)history%% *} | uniq -c | sort -nr | head -n 10'
+alias psg='ps ax|grep -v grep|grep -i'
+alias h='history'
+alias hg='history 1|grep'
+alias today="date +\"%F\""
+alias fspc='df -h .'
+
+# Linux specific aliases
+if [[  $(uname -s)  = 'Linux' ]] then
+    alias ls='ls -F --color'
+    alias grep='grep --color'
+else 
+    alias ls='ls -F'
+fi
+
+alias ll='ls -lh'
+alias la='ls -Alh'
+alias lad='ls -d -- .*(/)'  # only show dot-direcotories
+alias laf='ls -d -- .*(^/)' # only show dot-files
+alias lsd='ls -ld -- ^(\.)*(/)'   # show all directories
+alias lsf='ls -d -- *(^/)'  # only show files
+alias lse='ls -d -- *(/^F)' # only show empty directories
+
+if (( $+commands[vim] )) ; then
+    alias vi='vim -p'
+    alias vim='vim -p'
+    alias view='vim -R'
+elif (( $+commands[vi] )) ; then
+    alias vim='vi'
+fi
+
+if (( $+commands[links2] )) ; then
+    export LINKS_BROWSER="links2"
+elif (( $+commands[links] )) ; then
+    export LINKS_BROWSER="links"
+elif (( $+commands[lynx] )) ; then
+    export LINKS_BROWSER="lynx"
+fi
+
+
+alias myip=$LINKS_BROWSER' -dump http://www.myip.ch/ | grep -o "[[:digit:]].*[[:digit:]]"'
+
+alias alert-popup='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
+alias info-alert-popup='notify-send --urgency=low -i info '
+
+# alias dl='fc -s'
+
+
+alias setclip='perl -pe "chomp if eof" | xclip -selection clipboard; alert-popup "Copied to clipboard."'
+
+# git repository replacement for 'git-filter-branch'.
+# https://rtyley.github.io/bfg-repo-cleaner/
+#
+alias bfg='java -jar ~/projects/java/bfg-1.11.8.jar'
+
+
