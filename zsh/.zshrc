@@ -1,5 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/home/dek/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -7,7 +7,8 @@ export ZSH=/home/dek/.oh-my-zsh
 # time that oh-my-zsh is loaded.
 #ZSH_THEME="random"
 #ZSH_THEME="robbyrussell"
-ZSH_THEME="jbergantine"
+#ZSH_THEME="jbergantine"
+ZSH_THEME="agnoster"
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -47,14 +48,14 @@ ZSH_THEME="jbergantine"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git vi-mode systemd colorize safe-paste node brew cp sudo debian)
+plugins=(git vi-mode systemd colorize safe-paste node brew cp debian)
 #ubuntu extract vagrant systemd)
 # dirhistory sublime git-flow vi-mode)
 #plugins=(git)
 
 # User configuration
 
-#export PATH=$HOME/bin:/usr/local/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 #export PATH="$PATH:/home/dek/.rvm/gems/ruby-1.9.3-p547/bin:/home/dek/.rvm/gems/ruby-1.9.3-p547@global/bin:/home/dek/.rvm/rubies/ruby-1.9.3-p547/bin:/home/dek/bin:/usr/local/cuda-6.0/bin:/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin:/home/dek/perl5/perlbrew/bin:/home/dek/perl5/perlbrew/perls/perl-5.20.1/bin:/usr/local/cuda-6.0/bin:/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin:/usr/local/cuda-6.0/bin:/usr/lib/jvm/java-1.8.0-openjdk-amd64/bin:/home/dek/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/home/dek/.rvm/bin:/home/dek/android-sdks/tools/:/home/dek/.rvm/bin:/home/dek/android-sdks/tools/:/home/dek/.rvm/bin:/home/dek/android-sdks/tools/:/home/dek/.rvm/bin:/home/dek/.rvm/bin"
 
@@ -63,7 +64,7 @@ plugins=(git vi-mode systemd colorize safe-paste node brew cp sudo debian)
 source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
-#export LANG=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Preferred editor for local and remote sessions
 #if [[ -n $SSH_CONNECTION ]]; then
@@ -98,7 +99,6 @@ source $ZSH/oh-my-zsh.sh
 #
 #setopt appendhistory autocd extendedglob nohup autopushd
 
-
 # Add linuxbrew to PATH.
 #export PATH="$HOME/.linuxbrew/bin:$PATH"
 #export MANPATH="$HOME/.linuxbrew/share/man:$MANPATH"
@@ -122,9 +122,8 @@ source $ZSH/oh-my-zsh.sh
 #bindkey '^T' autosuggest-toggle
 
 #
-#export AUTOSUGGESTION_ACCEPT_RIGHT_ARROW=1
-#export AUTOSUGGESTION_HIGHLIGHT_COLOR="fg=7"
-
+export AUTOSUGGESTION_ACCEPT_RIGHT_ARROW=1
+export AUTOSUGGESTION_HIGHLIGHT_COLOR="fg=7"
 
 # Test and than source the options
 if [ -f ~/.zsh/zshoptions ]; then
@@ -175,8 +174,6 @@ else
     print -Pn "Warning: ~/.zsh/zshprompt is unavailable" 
 fi
 
-
-
 # Test and than source the prompt
 if [ -f ~/.zsh/zshhooks ]; then
     source ~/.zsh/zshhooks
@@ -187,7 +184,6 @@ fi
 if [ -f ~/.zsh/zshlocal ]; then
     source ~/.zsh/zshlocal
 fi
-
 
 fpath=($ZSH/functions $ZSH/completions $fpath)
 
@@ -203,5 +199,12 @@ zle-line-init() {
 }
 zle -N zle-line-init
 
-
 #export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+#./home/dek/.opam/opam-init/init.zsh > /dev/null 2> /dev/null || true
+
+source ~/perl5/perlbrew/etc/bashrc # Add perlbrew to PATH
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+

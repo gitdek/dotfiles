@@ -1,0 +1,129 @@
+# .Rprofile -- commands to execute at the beginning of each R session
+#
+# You can use this file to load packages, set options, etc.
+#
+# NOTE: changes in this file won't be reflected until after you quit
+# and start a new session
+#
+
+if(interactive()){
+#library(colorout)
+#library(setwidth)
+
+    options(warnPartialMatchAttr = TRUE,
+            warnPartialMatchDollar = TRUE,
+            warn = 1)
+
+        options(menu.graphics=FALSE) #graphics dialogs always seem to crash R
+        options(vimcom.verbose = 1, vimcom.allnames = TRUE)
+        options(editor = 'vim -c "set ft=r"')
+#options(pager = "vimrpager")
+        if(Sys.getenv("VIMRPLUGIN_TMPDIR") != "")
+            library(vimcom)
+                if(Sys.getenv("TERM") != "linux" && Sys.getenv("TERM") != "")
+#setOutputColors256(verbose = FALSE)
+                    if(nchar(Sys.getenv("DISPLAY")) > 1){
+                        grDevices::X11.options(width = 4.5, height = 4, ypos = 0,
+                                xpos = 1000, pointsize = 10)
+#    options(editor = 'gvim -f -c "set ft=r"')
+#    options(pager = "gvim -c 'set ft=rdoc' -")
+                    }
+    withOptions <- function(optlist, expr)
+    {
+        oldopt <- options(optlist)
+            on.exit(options(oldopt))
+            expr <- substitute(expr)
+            eval.parent(expr)
+    }
+
+    less = function(x) {
+        withOptions(list(pager='less', dplyr.print_min=.Machine$integer.max, width=10000, max.print=1e6), page(x, method='print'))
+    }
+
+    ch <- function(...) {
+        devtools::check(document = FALSE, ...)
+    }
+
+    tb <- traceback
+
+        echo <- function(x) {
+            cat(readLines(x), sep = "\n")
+        }
+    library(ggplot2)
+
+#use white backgrounds
+        theme_set(theme_bw())
+
+##colorblind palette
+#cb_palette <-c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+#use color brewer as default discrete colors
+        scale_colour_discrete <- function(...) scale_color_brewer(palette="Set1", ...)
+        scale_fill_discrete <- function(...) scale_fill_brewer(palette="Set1", ...)
+
+#log_ticks <- function(which="xy", ...){
+#require(scales)
+#object = list()
+#location = ''
+#if(grepl('x', which)){
+#object = list(object, 
+#scale_x_log10(breaks=trans_breaks("log10", function(x) 10^x), 
+#labels=trans_format("log10",math_format(10^.x)),
+#minor_breaks=trans_breaks("log10", function(x) 10^x/2)
+#)
+#)
+#location = paste(location, 'b', sep='')
+#}
+#if(grepl('y', which)){
+#object = list(object, 
+#scale_y_log10(breaks=trans_breaks("log10", function(x) 10^x), 
+#labels=trans_format("log10",math_format(10^.x)),
+#minor_breaks=trans_breaks("log10", function(x) 10^x/2)
+#)
+#)
+#location = paste(location, 'l', sep='')
+#}
+#list(annotation_logticks(..., sides=location), object)
+#}
+
+        library(devtools)
+
+# helper function to convert a data frame print output to an actual data frame
+        convert_data.frame <- function(x) {
+            lines <- strsplit(x, "\n")[[1]]
+
+                locs <- rex::re_matches(lines[1], rex::rex(non_spaces), global = TRUE, locations = TRUE)[[1]]
+
+                rowname_size <- rex::re_matches(lines[length(lines)], rex::rex(non_spaces), locations = TRUE)
+
+                starts <- c(rowname_size$end + 1, locs$end[-length(locs$end)] + 1)
+                ends <- locs$end
+
+                remove_whitespace <- function(x) {
+                    re_substitutes(x, rex::rex(list(start, any_spaces) %or% list(any_spaces, end)), '', global = TRUE)
+                }
+
+            fields <- lapply(lapply(lines, substring, starts, ends), remove_whitespace)
+
+                df <- as.data.frame(matrix(unlist(fields[-1]), ncol = length(fields[[1]]), byrow = TRUE), stringsAsFactors = FALSE)
+                df[] <- lapply(df, type.convert, as.is=TRUE)
+                colnames(df) <- fields[[1]]
+                df
+        }
+}
+options(repos=c(CRAN='http://cran.rstudio.com/',
+            BioCsoft = "http://bioconductor.org/packages/devel/bioc",
+            BioCann = "http://bioconductor.org/packages/devel/data/annotation",
+            BioCexp = "http://bioconductor.org/packages/devel/data/experiment",
+            BioCextra = "http://bioconductor.org/packages/devel/extra"
+            ))
+
+# devtools options
+
+options(
+        devtools.name = "J Puglisi",
+        devtools.desc.author = 'person("J", "Puglisi", email = "admin@meatwad.org", role = c("aut", "cre"))',
+        devtools.desc.license = "MIT + file LICENSE"
+       )
+
+
