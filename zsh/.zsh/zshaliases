@@ -1,8 +1,9 @@
 # zsh aliases
-# Last edit on Sat Mar 26 18:17:01 EDT 2016
-#
 
-alias zshconfig="gvim ~/.zshrc"
+alias zshconfig="vim ~/.zshrc"
+alias ohmyzsh="vim ~/.oh-my-zsh"
+alias vimconfig="vim ~/.vimrc"
+alias tmuxconfig="vim ~/.tmux.conf"
 
 # most used commands in history
 alias top10='print -l $$${(o)history%% *} | uniq -c | sort -nr | head -n 10'
@@ -11,12 +12,19 @@ alias h='history'
 alias hg='history 1|grep'
 alias today="date +\"%F\""
 alias fspc='df -h .'
+alias r='fc -e :'
+
+alias tmux="tmux -2"
+alias tmuxa="tmux attach -t"
+alias tmuxn="tmux new -s"
+alias tmuxk="tmux kill-session -t"
+alias tmuxl="tmux ls"
 
 # Linux specific aliases
 if [[  $(uname -s)  = 'Linux' ]] then
     alias ls='ls -F --color'
     alias grep='grep --color'
-else 
+else
     alias ls='ls -F'
 fi
 
@@ -51,17 +59,28 @@ alias alert-popup='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal |
 
 alias info-alert-popup='notify-send --urgency=low -i info '
 
-
 alias alert-popup-mac='terminal-notifier -message "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
-# alias dl='fc -s'
+alias alert-popup-wsl='wsl-notify "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert-popup-wsl$//'\'')"'
 
 
-alias setclip='perl -pe "chomp if eof" | xclip -selection clipboard; alert-popup "Copied to clipboard."'
+if [[ $(uname -r) =~ Microsoft$ ]] then
+    alias setclip='perl -pe "chomp if eof" | clip.exe'
+else
+    alias setclip='perl -pe "chomp if eof" | xclip -selection clipboard; alert-popup "Copied to clipboard."'
+fi
 
 # git repository replacement for 'git-filter-branch'.
 # https://rtyley.github.io/bfg-repo-cleaner/
 #
 alias bfg='java -jar ~/projects/java/bfg-1.11.8.jar'
 
+alias clear='[ $[$RANDOM % 10] = 0 ] && timeout 3 cmatrix; clear || clear'
+
+# eg 'gdbrun =python test.py'
+alias gdbrun='gdb -ex=r --args'
+
+alias -s {zip,ZIP}="unzip -l"
+
+alias weather="curl http://wttr.in/"
 
