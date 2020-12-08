@@ -16,6 +16,26 @@ function funlist() {
         sort
 }
 
+
+# FILE: merge two files with git merge-file
+function merge() {
+  local ext
+  [ $# -ne 2 ] && echo "Error: Need exactly two args." && return 1
+  [[ ! -r $1 || ! -r $2 ]] && echo "Error: One of the files is not readable." && return 1
+  if [[ ${1##*/} =~ '.' || ${2##*/} =~ '.' ]]; then
+    [ ${1##*.} != ${2##*.} ] && echo "Error: Files must have same extension." && return 1
+     ext=.${1##*.}
+  fi
+  touch tmp$ext # use empty file as the 'root' of the merge
+  cp $1 backup$ext
+  git merge-file $1 tmp$ext $2 # will write to file 1
+  mv $1 merge$ext
+  mv backup$ext $1
+  rm tmp$ext
+  echo "Files merged into \"merge$ext\"."
+}
+
+
 # NET: kill process on specified port
 function portslay () {
     kill -9 `lsof -i tcp:$1 | tail -1 | awk '{ print $2;}'`
@@ -137,225 +157,244 @@ function dick()
         '^Mem'|awk '{print $3"/1024/3+"}'; df -P -k -x nfs | grep -v \
         1k | awk '{if ($1 ~ "/dev/(scsi|sd)"){ s+= $2} s+= $2;} END \
         {print s/1024/50"/15+70";}'`|sed 's/\,/\./'|bc|sed 's/\(.$\)/.\1cm/'
-        }
+}
 
-        # MISC: mkdir && cd
-        function mcd()
-        {
-            test -z "$1" && echo mkcd: no path given && return
-            test -d "$1" && print "mkcd: Directory $1 already exists"
-            mkdir -p -- "$1"
-            cd -- "$1"
-        }
+# MISC: mkdir && cd
+function mcd()
+{
+    test -z "$1" && echo mkcd: no path given && return
+    test -d "$1" && print "mkcd: Directory $1 already exists"
+    mkdir -p -- "$1"
+    cd -- "$1"
+}
 
-        # SEARCH: search for various types or README file in dir and display them in $PAGER
-        function readme()
-        {
-            if [[ -x `which vimpager` ]]; then
-                local VPAGER=vimpager
+# SEARCH: search for various types or README file in dir and display them in $PAGER
+function readme()
+{
+    if [[ -x `which vimpager` ]]; then
+        local VPAGER=vimpager
+    else
+        local VPAGER=$PAGER
+    fi
+    local files
+    files=(./(#i)*(read*me|lue*m(in|)ut)*(ND))
+    if (($#files))
+    then $VPAGER $files
+    else
+        print 'No README files. Please lart \$MAINTAINER!'
+    fi
+}
+
+# ARCHIVE: Create a tar.gz from given directory
+function ctarz()
+{
+    local archive_name
+    archive_name="$1.tar.gz"
+    archive_name=${archive_name/\//}
+    tar cvfz "$archive_name" "$1"
+    echo "Created archive $archive_name"
+}
+
+# ARCHIVE: Create a tar.bz2 from given directory
+function ctarj()
+{
+    local archive_name
+    archive_name="$1.tar.bz2"
+    archive_name=${archive_name/\//}
+    tar cvfj "$archive_name" "$1"
+    echo "Created archive $archive_name"
+}
+
+
+if [[ -e /etc/debian_version ]]; then
+    # HOOK: Calls sudo if nessecary and rehash
+    function aptitude()
+    {
+        cmd=("search" "show" "why");
+        if [[ ${cmd[(i)$1]} -le ${#cmd} ]]; then
+            command aptitude $@
+        else
+            if (( EUID != 0 )); then
+                command sudo aptitude $@
             else
-                local VPAGER=$PAGER
+
+                command aptitude $@
             fi
-            local files
-            files=(./(#i)*(read*me|lue*m(in|)ut)*(ND))
-            if (($#files))
-            then $VPAGER $files
-            else
-                print 'No README files. Please lart \$MAINTAINER!'
-            fi
-        }
-
-        # ARCHIVE: Create a tar.gz from given directory
-        function ctarz()
-        {
-            local archive_name
-            archive_name="$1.tar.gz"
-            archive_name=${archive_name/\//}
-            tar cvfz "$archive_name" "$1"
-            echo "Created archive $archive_name"
-        }
-
-        # ARCHIVE: Create a tar.bz2 from given directory
-        function ctarj()
-        {
-            local archive_name
-            archive_name="$1.tar.bz2"
-            archive_name=${archive_name/\//}
-            tar cvfj "$archive_name" "$1"
-            echo "Created archive $archive_name"
-        }
-
-
-        if [[ -e /etc/debian_version ]]; then
-            # HOOK: Calls sudo if nessecary and rehash
-            function aptitude()
-            {
-                cmd=("search" "show" "why");
-                if [[ ${cmd[(i)$1]} -le ${#cmd} ]]; then
-                    command aptitude $@
-                else
-                    if (( EUID != 0 )); then
-                        command sudo aptitude $@
-                    else
-
-                        command aptitude $@
-                    fi
-                    rehash
-                fi
-            }
+            rehash
         fi
-
-        # MISC: Clear all iptable rules
-        function iptables-clear()
-        {
-            sudo zsh -c "iptables -F; iptables -X; iptables -t nat -F; iptables -t nat -X; iptables -t mangle -F; iptables -t mangle -X; iptables -P INPUT ACCEPT; iptables -P FORWARD ACCEPT; iptables -P OUTPUT ACCEPT "
-        }
-
-        # MISC: Play youtube video in mplayer
-        ytplay() { mplayer -cache 5000 -idx -ao pulse `youtube-dl -g "$1"` }
-
-        # NET: Grab all ips configured
-        function all-ip { /sbin/ifconfig | grep "inet addr" | grep -v "127.0.0.1" | awk -F: '{print $2}' | awk '{print $1}'; }
-
-        # NET: External ip6
-        function ext-ip6 () { curl -6 http://v6.ipv6-test.com/api/myip.php; echo -n; }
-
-        # NET: External ip4
-        function ext-ip () { wget http://ipecho.net/plain -O - -q ; echo; }
-
-        # MISC: Get the absolute path
-        function abs_path {
-            (cd "${1%/*}" &>/dev/null && printf "%s/%s" "$(pwd)" "${1##*/}")
-        }
-
-        # MISC: Uses gitignore.io API to pull a generate .gitignore file
-        function gitignore() { curl -L -s https://www.gitignore.io/api/$@ ;}
-
-        # NET: Convert a curl response into formatted json
-        function curljson {
-            curl -s $1 | underscore $2
-        }
-
-        # MISC: tail a file and highlight argument
-        function tailhighlight() {
-            # tail -f $1 | perl -pe "s/$2/\e[1;31;43m$&\e[0m/g"
-            tail -f $1 | sed "s/$2/\x1B[1;31;43m&\x1B[0m/g";
-        }
-
-        # MISC: Save a screenshot to the clipboard.
-        function setclip_screenshot {
-            /usr/bin/xfce4-screenshooter --fullscreen --clipboard
-            alert-popup "screengrab copied to clipboard."
-        }
-
-
-        # NET: remote ftp fs
-        function ftp-fs {
-            local host=$1
-            local auth=$2
-            local dest=$3
-            curlftpfs $host $dest -o user=$auth -o allow_other -o ssl -o no_verify_peer -o no_verify_hostname
-        }
-
-
-        # FUN: Grab a random Mitch Hedberg quote and display it in console and with a notify-send alert.
-        function mitch_hedberg_quote_web {
-            type curl >/dev/null 2>&1 || { echo >&2 "I require curl.  Aborting."; exit 1; }
-            MITCHISMS=$(curl --silent https://gist.githubusercontent.com/gitdek/38cb982379ce70c073c5/raw/8064b215de6d07507606f59f8551b113713f2df2/mitch_quotes.txt | shuf -n 1)
-            if hash notify-send 2>/dev/null; then
-                notify-send --urgency=low -i info $MITCHISM
-            fi
-            echo $MITCHISMS
-        }
-
-        # FUN: This is specific to sending a quote from mitch_hedberg_quote_web to HipChat using the API.
-        function mitch_hedberg_quote_hipchat {
-
-            MITCHISM=$(mitch_hedberg_quote_web |  python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))')
-            # Grab a random quote and convert it into json for the API for hipchat.
-            #
-            #QOTD=$(shuf -n 1 $MITCHISM | python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))')
-
-            #echo "waaat $MITCHISM"
-            curl -d '{"color": "green", "message": '$MITCHISM' , "notify": false, "message_format": "text"}' -H 'Content-Type: application/json' https://api.hipchat.com/v2/room/$HIPCHAT_API_ROOM/notification\?auth_token\=$HIPCHAT_API_AUTH_TOKEN
-
-        }
-
-
-        #### MARKS
-        #
-        #
-        # Used to mark (as in bookmark) directories.
-        #
-        export MARKPATH=$HOME/.marks # Usually exports are in ~/.zsh/zshexports but this is an exception.
-
-        # MISC: Jump to that mark.
-        function jump {
-            cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
-        }
-
-        ## eg. mark something will mark the current directory as 'alice' for future use(jump alice)
-        ## If in the directory /var/www/bob/ and we run 'mark' without any arguments it will name it after the current directory(bob)
-        # MISC: Mark the current directory with an optional alias.
-        function mark {
-            mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
-        }
-
-        # MISC: Remove a mark.
-        function unmark {
-            rm -i "$MARKPATH/$1"
-        }
-
-        # MISC: List all the marks in a clean format.
-        function marks {
-            ls -l "$MARKPATH" | sed 's/  / /g' | cut -d' ' -f9- | sed 's/ -/\t-/g' && echo
-        }
-
-
-        _completemarks() {
-            reply=( $(ls $MARKPATH/) )
-        }
-
-        # NET: Use ix.io API; ix -n 1 self_destruct.txt : paste will be deleted after one read. ix -d ID to delete
-        #     ix hello.txt              # paste file (name/ext will be set).
-        #     echo Hello world. | ix    # read from STDIN (won't set name/ext).
-        #     ix -n 1 self_destruct.txt # paste will be deleted after one read.
-        #     ix -i ID hello.txt        # replace ID, if you have permission.
-        #     ix -d ID
-        # NET: Use ix.io command line pastebin.
-        ix() {
-            local opts
-            local OPTIND
-
-            [ -f "$HOME/.netrc" ] && opts='-n'
-            while getopts ":hd:i:n:" x; do
-                case $x in
-                    h) echo "ix [-d ID] [-i ID] [-n N] [opts]"; return;;
-                    d) $echo curl $opts -X DELETE ix.io/$OPTARG; return;;
-                    i) opts="$opts -X PUT"; local id="$OPTARG";;
-                    n) opts="$opts -F read:1=$OPTARG";;
-                esac
-            done
-            shift $(($OPTIND - 1))
-
-            [ -t 0 ] && {
-                local filename="$1"
-            shift
-            [ "$filename" ] && {
-                curl --basic -u dek:dek $opts -F f:1=@"$filename" $* ix.io/$id
-            return
-        }
-
-        echo "^C to cancel, ^D to send."
     }
+fi
 
-    curl $opts -F f:1='<-' $* ix.io/$id
+# MISC: Clear all iptable rules
+function iptables-clear()
+{
+    sudo zsh -c "iptables -F; iptables -X; iptables -t nat -F; iptables -t nat -X; iptables -t mangle -F; iptables -t mangle -X; iptables -P INPUT ACCEPT; iptables -P FORWARD ACCEPT; iptables -P OUTPUT ACCEPT "
+}
+
+# MISC: Play youtube video in mplayer
+function ytplay() { mplayer -cache 5000 -idx -ao pulse `youtube-dl -g "$1"` }
+
+# NET: Grab all ips configured
+function all-ip { /sbin/ifconfig | grep "inet addr" | grep -v "127.0.0.1" | awk -F: '{print $2}' | awk '{print $1}'; }
+
+# NET: External ip6
+function ext-ip6 () { curl -6 http://v6.ipv6-test.com/api/myip.php; echo -n; }
+
+# NET: External ip4
+function ext-ip () { wget http://ipecho.net/plain -O - -q ; echo; }
+
+# MISC: Get the absolute path
+function abs_path {
+    (cd "${1%/*}" &>/dev/null && printf "%s/%s" "$(pwd)" "${1##*/}")
+}
+
+# MISC: Uses gitignore.io API to pull a generate .gitignore file
+function gitignore() { curl -L -s https://www.gitignore.io/api/$@ ;}
+
+# NET: Convert a curl response into formatted json
+function curljson {
+    curl -s $1 | underscore $2
+}
+
+# MISC: tail a file and highlight argument
+function tailhighlight() {
+    # tail -f $1 | perl -pe "s/$2/\e[1;31;43m$&\e[0m/g"
+    tail -f $1 | sed "s/$2/\x1B[1;31;43m&\x1B[0m/g";
+}
+
+# MISC: Save a screenshot to the clipboard.
+function setclip_screenshot {
+    /usr/bin/xfce4-screenshooter --fullscreen --clipboard
+    alert-popup "screengrab copied to clipboard."
+}
+
+
+# NET: remote ftp fs
+function ftp-fs {
+    local host=$1
+    local auth=$2
+    local dest=$3
+    curlftpfs $host $dest -o user=$auth -o allow_other -o ssl -o no_verify_peer -o no_verify_hostname
+}
+
+
+# FUN: Grab a random Mitch Hedberg quote and display it in console and with a notify-send alert.
+function mitch_hedberg_quote_web {
+    type curl >/dev/null 2>&1 || { echo >&2 "I require curl.  Aborting."; exit 1; }
+    MITCHISMS=$(curl --silent https://gist.githubusercontent.com/gitdek/38cb982379ce70c073c5/raw/8064b215de6d07507606f59f8551b113713f2df2/mitch_quotes.txt | shuf -n 1)
+    if hash notify-send 2>/dev/null; then
+        notify-send --urgency=low -i info $MITCHISM
+    fi
+    echo $MITCHISMS
+}
+
+# FUN: This is specific to sending a quote from mitch_hedberg_quote_web to HipChat using the API.
+function mitch_hedberg_quote_hipchat {
+
+    MITCHISM=$(mitch_hedberg_quote_web |  python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))')
+    # Grab a random quote and convert it into json for the API for hipchat.
+    #
+    #QOTD=$(shuf -n 1 $MITCHISM | python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))')
+
+    #echo "waaat $MITCHISM"
+    curl -d '{"color": "green", "message": '$MITCHISM' , "notify": false, "message_format": "text"}' -H 'Content-Type: application/json' https://api.hipchat.com/v2/room/$HIPCHAT_API_ROOM/notification\?auth_token\=$HIPCHAT_API_AUTH_TOKEN
+
+}
+
+
+#### MARKS
+#
+#
+# Used to mark (as in bookmark) directories.
+#
+export MARKPATH=$HOME/.marks # Usually exports are in ~/.zsh/zshexports but this is an exception.
+
+# MISC: Jump to that mark.
+function jump {
+    cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+}
+
+## eg. mark something will mark the current directory as 'alice' for future use(jump alice)
+## If in the directory /var/www/bob/ and we run 'mark' without any arguments it will name it after the current directory(bob)
+# MISC: Mark the current directory with an optional alias.
+function mark {
+    mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
+}
+
+# MISC: Remove a mark.
+function unmark {
+    rm -i "$MARKPATH/$1"
+}
+
+# MISC: List all the marks in a clean format.
+function marks {
+    ls -l "$MARKPATH" | sed 's/  / /g' | cut -d' ' -f9- | sed 's/ -/\t-/g' && echo
+}
+
+
+_completemarks() {
+    reply=( $(ls $MARKPATH/) )
+}
+
+# NET: Use ix.io API; ix -n 1 self_destruct.txt : paste will be deleted after one read. ix -d ID to delete
+#     ix hello.txt              # paste file (name/ext will be set).
+#     echo Hello world. | ix    # read from STDIN (won't set name/ext).
+#     ix -n 1 self_destruct.txt # paste will be deleted after one read.
+#     ix -i ID hello.txt        # replace ID, if you have permission.
+#     ix -d ID
+# NET: Use ix.io command line pastebin.
+function ix() {
+    local opts
+    local OPTIND
+
+    [ -f "$HOME/.netrc" ] && opts='-n'
+    while getopts ":hd:i:n:" x; do
+        case $x in
+            h) echo "ix [-d ID] [-i ID] [-n N] [opts]"; return;;
+            d) $echo curl $opts -X DELETE ix.io/$OPTARG; return;;
+            i) opts="$opts -X PUT"; local id="$OPTARG";;
+            n) opts="$opts -F read:1=$OPTARG";;
+        esac
+    done
+    shift $(($OPTIND - 1))
+
+    [ -t 0 ] && {
+        local filename="$1"
+    shift
+    [ "$filename" ] && {
+        curl $opts -F f:1=@"$filename" $* ix.io/$id
+    return
+}
+
+echo "^C to cancel, ^D to send."
+}
+
+curl $opts -F f:1='<-' $* ix.io/$id
 }
 
 ix_usage() {
     echo "ix [-d ID] [-i ID] [-n N] [opts]"
-
 }
+
+
 compctl -K _completemarks jump
 compctl -K _completemarks unmark
+
+# MISC: manpages with colors
+function man() {
+	env LESS_TERMCAP_mb=$(printf '\e[01;31m') \
+		LESS_TERMCAP_md=$(printf '\e[01;38;5;74m') \
+		LESS_TERMCAP_me=$(printf '\e[0m') \
+		LESS_TERMCAP_se=$(printf '\e[0m') \
+		LESS_TERMCAP_so=$(printf '\e[38;5;246m') \
+		LESS_TERMCAP_ue=$(printf '\e[0m') \
+		LESS_TERMCAP_us=$(printf '\e[04;38;5;146m') \
+    man "$@"
+}
+
+# MISC: make patch
+function mkpatch() {
+   diff -Naur $1 $2 > $3
+}
+
 

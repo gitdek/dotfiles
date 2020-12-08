@@ -1,0 +1,50 @@
+
+export PATH=$HOME/bin:/usr/local/bin:$PATH
+
+export MANPATH="/usr/local/man:$MANPATH"
+
+export LANG=en_US.UTF-8
+
+# Set less options
+if [[ -x $(which less 2> /dev/null) ]]
+then
+    export PAGER="less"
+    export LESS="--ignore-case --LONG-PROMPT --QUIET --chop-long-lines -Sm --RAW-CONTROL-CHARS --quit-if-one-screen --no-init"
+    export LESSHISTFILE='-'
+    if [[ -x $(which lesspipe 2> /dev/null) ]]
+    then
+        LESSOPEN="| lesspipe %s"
+        export LESSOPEN
+    fi
+fi
+
+# Preferred editor for local and remote sessions
+if [[ -n $SSH_CONNECTION ]]; then
+    export EDITOR='vi'
+else
+    export EDITOR='vim'
+fi
+
+# Setup perl
+PATH="/home/dek/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/dek/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/dek/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/dek/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/dek/perl5"; export PERL_MM_OPT;
+
+PROJECTS="$HOME/projects"; export PROJECTS;
+export GEM_HOME="$HOME/gems"
+export PATH="$HOME/gems/bin:$PATH"
+export PATH="$PATH:$HOME/.local/bin"
+export PATH="$PATH:$HOME/bin"
+export GOPATH="$HOME/go" # or any directory to put your Go code
+export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"
+export DISPLAY=:0
+export DOCKER_BUILDKIT=0
+LLD_LINK_PATH="/usr/lib/llvm-10"; export LLD_LINK_PATH;
+export PATH="$PATH:$LLD_LINK_PATH:$LLD_LINK_PATH/bin"
+export SSH_KEY_PATH="~/.ssh/id_rsa"
+
+
+
+

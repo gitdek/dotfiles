@@ -17,7 +17,7 @@ set hidden                                         "hide buffers instead of clos
 set backspace=indent,eol,start                     "make backspace behave properly in insert mode
 set clipboard=unnamedplus                          "use system clipboard; requires has('unnamedplus') to be 1
 set wildmenu                                       "better menu with completion in command mode
-set wildmode=longest:full,full
+set wildmode=longest,list,full
 set completeopt=longest,menuone,preview            "better insert mode completions
 set nowrap                                         "disable soft wrap for lines
 set scrolloff=2                                    "always show 2 lines above/below the cursor
@@ -35,6 +35,28 @@ set incsearch                                      "incremental search highlight
 set ignorecase                                     "searches are case insensitive...
 set smartcase                                      " ..unless they contain at least one capital letter
 set hlsearch                                       "highlight search patterns
+set modeline                                       " allow files to include a 'mode line', to
+                                                   "    override vim defaults
+set modelines=5                                    " check
+                                                   "    the first 5 lines for a modeline
+" Better backup, swap and undos storage
+set directory=~/.vim/dirs/tmp     " directory to place swap files in
+set backup                        " make backup files
+set backupdir=~/.vim/dirs/backups " where to put backup files
+set undofile                      " persistent undos - undo after you re-open the file
+set undodir=~/.vim/dirs/undos
+set viminfo+=n~/.vim/dirs/viminfo
+
+
+let mapleader="\<Space>"
+nnoremap <leader>w :w<cr>
+nnoremap <leader>U :redo<cr>
+
+"move lines around
+nnoremap <leader>k :m-2<cr>==
+nnoremap <leader>j :m+<cr>==
+xnoremap <leader>k :m-2<cr>gv=gv
+xnoremap <leader>j :m'>+<cr>gv=gv
 
 
 "remove current line highlight in unfocused window
@@ -44,19 +66,8 @@ au WinLeave,FocusLost,CmdwinLeave * set nocul
 "remove trailing whitespace on save
 autocmd! BufWritePre * :%s/\s\+$//e
 
-let mapleader="\<Space>"
-nnoremap <leader>w :w<cr>
-nnoremap <leader>U :redo<cr>
-
 "replace the word under cursor
 nnoremap <leader>* :%s/\<<c-r><c-w>\>//g<left><left>
-
-"move lines around
-nnoremap <leader>k :m-2<cr>==
-nnoremap <leader>j :m+<cr>==
-xnoremap <leader>k :m-2<cr>gv=gv
-xnoremap <leader>j :m'>+<cr>gv=gv
-
 
 "create a new buffer (save it with :w ./path/to/FILENAME)
 nnoremap <leader>B :enew<cr>
@@ -149,6 +160,7 @@ Bundle 'motemen/git-vim'
 Bundle 'kien/tabman.vim'
 " Airline
 Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 "Bundle 'bling/vim-airline'
 " Terminal Vim with 256 colors colorscheme
 Bundle 'fisadev/fisa-vim-colorscheme'
@@ -166,7 +178,7 @@ Bundle 'michaeljsmith/vim-indent-object'
 " operators, highlighting, run and ipdb breakpoints)
 Bundle 'klen/python-mode'
 " Better autocompletion
-"Bundle 'Shougo/neocomplcache.vim'
+Bundle 'Shougo/neocomplcache.vim'
 " Snippets manager (SnipMate), dependencies, and snippets repo
 "Bundle 'MarcWeber/vim-addon-mw-utils'
 "Bundle 'tomtom/tlib_vim'
@@ -177,7 +189,7 @@ Bundle 'airblade/vim-gitgutter'
 " Automatically sort python imports
 "Bundle 'fisadev/vim-isort'
 " Drag visual blocks arround
-"Bundle 'fisadev/dragvisuals.vim'
+Bundle 'fisadev/dragvisuals.vim'
 " Relative numbering of lines (0 is the current line)
 " (disabled by default because is very intrusive and can't be easily toggled
 " on/off. When the plugin is present, will always activate the relative
@@ -188,7 +200,7 @@ Bundle 'airblade/vim-gitgutter'
 " Bundles from vim-scripts repos
 
 " Python code checker
-"Bundle 'pyflakes.vim'
+Bundle 'pyflakes.vim'
 " Search results counter
 Bundle 'IndexedSearch'
 " XML/HTML tags navigation
@@ -208,52 +220,35 @@ if iCanHazVundle == 0
     :BundleInstall
 endif
 
-" allow plugins by file type
-filetype plugin on
-filetype indent on
-
-" tabs and spaces handling
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set smarttab
-set expandtab
-set smartindent
-set ruler
-set relativenumber
-set ttyfast
-set autoread
-set more
-set cursorline!
-
 " tablength exceptions
 autocmd FileType html setlocal shiftwidth=2 tabstop=2 softtabstop=2
 autocmd FileType htmldjango setlocal shiftwidth=2 tabstop=2 softtabstop=2
 autocmd FileType javascript setlocal shiftwidth=2 tabstop=2 softtabstop=2
 
-" always show status bar
-set ls=2
-
-" incremental search
-set incsearch
-
-" highlighted search results
-set hlsearch
-
-" syntax highlight on
-syntax on
-
-" line numbers
-set nu
 
 " toggle Tagbar display
 "map <F10> :TagbarToggle<CR>
 " autofocus on Tagbar open
 "let g:tagbar_autofocus = 1
 
-" NERDTree (better file browser) toggle
-map <Leader><F11> :NERDTreeToggle<CR>
-nmap ,t :NERDTreeFind<CR>
+
+"==================== NerdTree ====================
+"
+"" For toggling
+" nmap <C-n> :NERDTreeToggle<CR>
+noremap <Leader>n :NERDTreeToggle<cr>
+noremap <Leader>f :NERDTreeFind<cr>
+
+
+let NERDTreeShowHidden=1
+let NERDTreeShowBookmarks=1
+let NERDTreeIgnore=['\.vim$', '\~$', '\.git$', '\.DS_Store', '\.pyc$', '\.pyo$']
+
+
+" Close nerdtree and vim on close file
+"
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
 
 " tab navigation
 map tn :tabn<CR>
@@ -282,8 +277,8 @@ let g:gitgutter_max_signs = 500
 let g:gitgutter_eager = 0
 let g:gitgutter_realtime = 0
 
-" old autocomplete keyboard shortcut
-imap <C-J> <C-X><C-O>
+" old autocomplete keyboard shortcuts
+"imap <C-J> <C-X><C-O>
 
 " show pending tasks list
 map <Leader>t :TaskList<CR>
@@ -293,7 +288,7 @@ ca w!! w !sudo tee "%"
 
 " debugger keyboard shortcuts
 let g:vim_debug_disable_mappings = 0
-"map <F5> :Dbg over<CR>
+map <Leader><F5> :Dbg over<CR>
 "map <F6> :Dbg into<CR>
 "map <F7> :Dbg out<CR>
 "map <F8> :Dbg here<CR>
@@ -331,8 +326,6 @@ let g:vim_debug_disable_mappings = 0
 "  \ 'file': '\.pyc$\|\.pyo$',
 "  \ }
 "
-" Ignore files on NERDTree
-let NERDTreeIgnore = ['\.pyc$', '\.pyo$']
 
 " simple recursive grep
 command! -nargs=1 RecurGrep lvimgrep /<args>/gj ./**/*.* | lopen | set nowrap
@@ -390,20 +383,9 @@ endif
 " when scrolling, keep cursor 3 lines away from screen border
 set scrolloff=3
 
-" autocompletion of files and commands behaves like shell
-" (complete only the common part, list the options that match)
-set wildmode=list:longest
-
 " Fix to let ESC work as espected with Autoclose plugin
 let g:AutoClosePumvisible = {"ENTER": "\<C-Y>", "ESC": "\<ESC>"}
 
-" Better backup, swap and undos storage
-set directory=~/.vim/dirs/tmp     " directory to place swap files in
-set backup                        " make backup files
-set backupdir=~/.vim/dirs/backups " where to put backup files
-set undofile                      " persistent undos - undo after you re-open the file
-set undodir=~/.vim/dirs/undos
-set viminfo+=n~/.vim/dirs/viminfo
 " store yankring history file there too
 let g:yankring_history_dir = '~/.vim/dirs/'
 
@@ -420,8 +402,10 @@ if !isdirectory(&undodir)
 endif
 
 " vim-airline settings
-let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 0
 let g:airline_theme = 'minimalist'
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#ale#enabled = 1
 "let g:airline#extensions#whitespace#enabled = 0
 
 " dragvisuals mappings
@@ -457,5 +441,41 @@ map <C-F1> :TOhtml<enter>:wq<enter>:n<enter><C-F1>
 " add yaml stuffs
 au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
+
+" visually select lines, then do :norm i# to comment those lines with #
+" then do the same thing but with :norm x
+vnoremap <leader>n :norm
+
+
+" Dont forget to set arguments with let bexec_args="-f arg1 -c"
+ nmap <silent> <unique> <F5> w :Bexec()<CR>
+ vmap <silent> <unique> <F5> :BexecVisual()<CR>
+
+let g:html_font = ["Consolas", "DejaVu Sans Mono"]
+let g:html_no_progress = 1
+
+map <silent> <Leader><F1> :TOhtml<enter>
+
+
+function! FilterToNewWindow()
+  let TempFile = tempname()
+  let SaveModified = &modified
+  exe 'w ' . TempFile
+  exe '!chmod +x ' . TempFile
+  let &modified = SaveModified
+  exe ':e ' . TempFile
+  exe '%! ' . @%
+  exe 'w!'
+endfunction
+
+command! FW call FilterToNewWindow()
+vnoremap QQ y:call FW(@")<Enter>
+
+
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | exe 'cd '.argv()[0] | endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
 
 

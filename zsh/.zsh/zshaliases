@@ -1,6 +1,9 @@
 # zsh aliases
-
-alias zshconfig="vim ~/.zshrc"
+alias zshconfig="vi ~/.zshrc"
+alias zshconfigreload="echo reloading; source ~/.zshrc"
+alias zshaliases="vim ~/.zsh/zshaliases"
+alias zshfunctions="vim ~/.zsh/zshfunctions"
+alias zshexports="vim ~/.zsh/zshexports"
 alias ohmyzsh="vim ~/.oh-my-zsh"
 alias vimconfig="vim ~/.vimrc"
 alias tmuxconfig="vim ~/.tmux.conf"
@@ -19,6 +22,9 @@ alias tmuxa="tmux attach -t"
 alias tmuxn="tmux new -s"
 alias tmuxk="tmux kill-session -t"
 alias tmuxl="tmux ls"
+
+alias fuckin="sudo"
+
 
 # Linux specific aliases
 if [[  $(uname -s)  = 'Linux' ]] then
@@ -56,15 +62,12 @@ fi
 alias myip=$LINKS_BROWSER' -dump http://www.myip.ch/ | grep -o "[[:digit:]].*[[:digit:]]"'
 
 alias alert-popup='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 alias info-alert-popup='notify-send --urgency=low -i info '
-
 alias alert-popup-mac='terminal-notifier -message "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
 alias alert-popup-wsl='wsl-notify "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert-popup-wsl$//'\'')"'
 
 
-if [[ $(uname -r) =~ Microsoft$ ]] then
+if [[ $(uname -r) =~ microsoft-standard$ ]] then
     alias setclip='perl -pe "chomp if eof" | clip.exe'
 else
     alias setclip='perl -pe "chomp if eof" | xclip -selection clipboard; alert-popup "Copied to clipboard."'
@@ -83,4 +86,12 @@ alias gdbrun='gdb -ex=r --args'
 alias -s {zip,ZIP}="unzip -l"
 
 alias weather="curl http://wttr.in/"
+
+# quick hack to make watch work with aliases
+alias watch='watch -c -d -t -p'
+
+# docker images
+# alias kali='docker run -it kalilinux/kali-bleeding-edge -v /bin/bash
+alias kali='docker run --rm -i -t -p 9990-9999:9990-9999 -v $HOME/.kali:/root/.kali -v /tmp/kali:/tmp/data --name kali kalilinux/kali-bleeding-edge'
+alias metasploit='docker run --rm -i -t -p 9990-9999:9990-9999 -v $HOME/.msf4:/root/.msf4 -v /tmp/msf:/tmp/data --name msf phocean/msf'
 

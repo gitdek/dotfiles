@@ -29,7 +29,7 @@ TIMEFMT="Real: %E User: %U System: %S Percent: %P Cmd: %J"
 
 # Zsh settings for history
 #export HISTIGNORE="&:ls:[bf]g:exit:reset:clear:cd:cd ..:cd.."
-HISTSIZE=25000
+HISTSIZE=15000
 HISTFILE=~/.zsh_history
 SAVEHIST=100000
 HISTORY_IGNORE="(ls|[bf]g|exit|reset|clear|cd|cd ..|cd..)"
@@ -43,10 +43,24 @@ DIRSTACKSIZE=50
 
 LISTMAX=0
 
-autoload -U compinit
+#autoload -U compinit
+#autoload -Uz compinit
+#if [[ -n "${ZSH_COMPDUMP}"(#qN.mh+24) ]]; then
+# if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
+#    compinit
+#else
+#    compinit -C
+#fi
+
+#if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
+#compinit
+#else
+#  compinit -C
+#fi
+
 autoload -U promptinit
 autoload keeper && keeper
-compinit -i
+#compinit -i
 
 promptinit
 
@@ -64,23 +78,23 @@ setopt no_clobber
 
 # This tries to find wordcode files and automatically re-compile them if
 # at least one of the original files is newer than the wordcode file.
-  autoload zrecompile
+autoload zrecompile
 
 # This is a multiple move based on zsh pattern matching (like "mmv").
 # Read ``less ${^fpath}/zmv(N)'' for more details
-  autoload zmv
+autoload zmv
 # Edit small files with the command line editor.
-  autoload -U zed
+autoload -U zed
 
 # Edit the command line using your usual editor.
-  autoload -U edit-command-line
+autoload -U edit-command-line
 
 setopt auto_menu
 unsetopt menu_complete
 
-  # This module should be automatically loaded if u use menu selection but
+# This module should be automatically loaded if u use menu selection but
 # to be sure we do it here
-  zmodload -i zsh/complist
+zmodload -i zsh/complist
 
 # When listing options (by `setopt', `unsetopt', `set -o' or `set +o'),
 # those turned on by default appear in the list prefixed with `no'.
@@ -251,10 +265,9 @@ setopt shortloops
 
 
 export AUTOSUGGESTION_ACCEPT_RIGHT_ARROW=1
+export AUTOSUGGESTION_HIGHLIGHT_COLOR="fg=7"
 
-# export AUTOSUGGESTION_HIGHLIGHT_COLOR=fg=7
-
-# zstyle ':completion:*:*:jumpto:*:processes' command 'ps --forest -e -o pid,user,tty,cmd'
+zstyle ':completion:*:*:jumpto:*:processes' command 'ps --forest -e -o pid,user,tty,cmd'
 
 zstyle ':completion:*' menu select
 
