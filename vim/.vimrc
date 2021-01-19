@@ -29,7 +29,7 @@ set backspace=indent,eol,start                     "make backspace behave proper
 set clipboard^=unnamedplus						   "operator ^= prepends the unnamedplus setting, rather than appending it.
 set wildmenu                                       "better menu with completion in command mode
 set wildmode=longest,list,full
-set completeopt=longest,menuone,preview            "better insert mode completions
+set completeopt=longest,menuone,preview,noinsert   "better insert mode completions
 set nowrap                                         "disable soft wrap for lines
 set scrolloff=2                                    "always show 2 lines above/below the cursor
 set showcmd                                        "display incomplete commands
