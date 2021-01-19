@@ -1,3 +1,16 @@
+#  ███████╗███████╗██╗!!██╗!!!!!█████╗!███████╗██╗!█████╗!███████╗███████╗███████╗
+#  ╚══███╔╝██╔════╝██║!!██║!!!!██╔══██╗██╔════╝██║██╔══██╗██╔════╝██╔════╝██╔════╝
+#  !!███╔╝!███████╗███████║!!!!███████║███████╗██║███████║███████╗█████╗!!███████╗
+#  !███╔╝!!╚════██║██╔══██║!!!!██╔══██║╚════██║██║██╔══██║╚════██║██╔══╝!!╚════██║
+#  ███████╗███████║██║!!██║!!!!██║!!██║███████║██║██║!!██║███████║███████╗███████║
+#  ╚══════╝╚══════╝╚═╝!!╚═╝!!!!╚═╝!!╚═╝╚══════╝╚═╝╚═╝!!╚═╝╚══════╝╚══════╝╚══════╝
+#
+#  ▓▓▓▓▓▓▓▓▓▓
+#  ▓ author ▓ dek <https://git.io/gitdek>
+#  ▓ repo   ▓ https://github.com/gitdek/dotfiles
+#  ▓ mirror ▓ https://git.io/.dekdotfiles
+#  ▓▓▓▓▓▓▓▓▓▓
+
 # zsh aliases
 alias zshconfig="vi ~/.zshrc"
 alias zshconfigreload="echo reloading; source ~/.zshrc"
@@ -22,9 +35,19 @@ alias tmuxa="tmux attach -t"
 alias tmuxn="tmux new -s"
 alias tmuxk="tmux kill-session -t"
 alias tmuxl="tmux ls"
-
 alias fuckin="sudo"
+alias please="sudo"
 
+alias viml="vim -c \"normal '0\"" # Open the last file you edited in vim
+
+alias todo="todo.sh"
+alias todoe="todo.sh edit todo"
+alias todoconfig="vim /home/dek/.config/todo/todo.cfg"
+# TODO_DIR is an export so it is defined in zsh exports. See alias zshexports.
+alias todoh="todo | ansi2html | tee $TODO_DIR/todo.html && cd $TODO_DIR && xdg-open todo.html"
+
+alias mux="tmuxinator"
+alias wtig='while; do; tig --all; sleep 1; done'
 
 # Linux specific aliases
 if [[  $(uname -s)  = 'Linux' ]] then

@@ -1,9 +1,17 @@
-# This file is a part of my zsh configuration. It's sourced from the .zshrc
-# file. It contains my key bindings
+#  ███████╗███████╗██╗!!██╗!!!!!██████╗!██████╗!███╗!!!███╗██████╗!██╗!!!!!
+#  ╚══███╔╝██╔════╝██║!!██║!!!!██╔════╝██╔═══██╗████╗!████║██╔══██╗██║!!!!!
+#  !!███╔╝!███████╗███████║!!!!██║!!!!!██║!!!██║██╔████╔██║██████╔╝██║!!!!!
+#  !███╔╝!!╚════██║██╔══██║!!!!██║!!!!!██║!!!██║██║╚██╔╝██║██╔═══╝!██║!!!!!
+#  ███████╗███████║██║!!██║!!!!╚██████╗╚██████╔╝██║!╚═╝!██║██║!!!!!███████╗
+#  ╚══════╝╚══════╝╚═╝!!╚═╝!!!!!╚═════╝!╚═════╝!╚═╝!!!!!╚═╝╚═╝!!!!!╚══════╝
+#  ▓▓▓▓▓▓▓▓▓▓
+#  ▓ author ▓ dek <https://git.io/gitdek>
+#  ▓ repo   ▓ https://github.com/gitdek/dotfiles
+#  ▓ mirror ▓ https://git.io/.dekdotfiles
+#  ▓▓▓▓▓▓▓▓▓▓
 
 
 zmodload zsh/complist
-
 
 zstyle ':completion:*' list-colors ''
 zstyle ':completion:*' insert-unambiguous true
@@ -24,7 +32,7 @@ zstyle ':completion:*:approximate:*' max-errors 3 numeric
 zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:kill:*'   force-list always
 
-compctl -k ping telnet ncftp host nslookup irssi rlogin ftp weechat-curses
+#compctl -k ping telnet ncftp host nslookup irssi rlogin ftp weechat-curses
 
 compctl -g '*.(pdf|ps|PDF|PS)' + -g '*(-/)' evience xpdf
 compctl -g '*.(jpg|JPG|jpeg|JPEG|gif|GIF|png|PNG|bmp)' + -g '*(-/)' eog feh gimp
@@ -56,7 +64,6 @@ zstyle -e ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX + $#SU
 zstyle ':completion:*:descriptions' format "- %d -"
 zstyle ':completion:*:corrections' format "- %d - (errors %e})"
 zstyle ':completion:*:default' list-prompt '%S%M matches%s'
-
 
 
 

@@ -1,71 +1,148 @@
+#  ███████╗███████╗██╗!!██╗!!!!███████╗██╗!!!██╗███╗!!!██╗!██████╗████████╗██╗!██████╗!███╗!!!██╗███████╗
+#  ╚══███╔╝██╔════╝██║!!██║!!!!██╔════╝██║!!!██║████╗!!██║██╔════╝╚══██╔══╝██║██╔═══██╗████╗!!██║██╔════╝
+#  !!███╔╝!███████╗███████║!!!!█████╗!!██║!!!██║██╔██╗!██║██║!!!!!!!!██║!!!██║██║!!!██║██╔██╗!██║███████╗
+#  !███╔╝!!╚════██║██╔══██║!!!!██╔══╝!!██║!!!██║██║╚██╗██║██║!!!!!!!!██║!!!██║██║!!!██║██║╚██╗██║╚════██║
+#  ███████╗███████║██║!!██║!!!!██║!!!!!╚██████╔╝██║!╚████║╚██████╗!!!██║!!!██║╚██████╔╝██║!╚████║███████║
+#  ╚══════╝╚══════╝╚═╝!!╚═╝!!!!╚═╝!!!!!!╚═════╝!╚═╝!!╚═══╝!╚═════╝!!!╚═╝!!!╚═╝!╚═════╝!╚═╝!!╚═══╝╚══════╝
+#
+#  ▓▓▓▓▓▓▓▓▓▓
+#  ▓ author ▓ dek <https://git.io/gitdek>
+#  ▓ repo   ▓ https://github.com/gitdek/dotfiles
+#  ▓ mirror ▓ https://git.io/.dekdotfiles
+#  ▓▓▓▓▓▓▓▓▓▓
+
 
 bld='\e[1m'
 rst='\e[0m'
 inv='\e[7m'
-# This file is a part of my zsh configuration. It's sourced from the .zshrc
-# file. It contains some custom (or not) functions
 
 # Create a /overview/ of all available function()'s; the description for
 # each funtion() *must* be the first line above the string `function'!
 # Otherwise it wont work.
 # Display all function()'s with her descriptions
 function funlist() {
-    grep -B 1 "^function" $HOME/.zsh/zshfunctions | \
-        grep -v "^\-\-$" | \
-        awk '{ if(/^#/) { gsub(/^#[:space:]*/, ""); ht=$0 }; getline; gsub(/ ?\(\)/, ":"); printf("\033[33m->\033[0m \033[1m\033[32m%-30s\033[0m \033[31m%s\033[0m\n", $2, ht); }' | \
-        sort
+	grep -B 1 "^function" $HOME/.zsh/zshfunctions | \
+		grep -v "^\-\-$" | \
+		awk '{ if(/^#/) { gsub(/^#[:space:]*/, ""); ht=$0 }; getline; gsub(/ ?\(\)/, ":"); printf("\033[33m->\033[0m \033[1m\033[32m%-30s\033[0m \033[31m%s\033[0m\n", $2, ht); }' | \
+		sort
 }
 
+# NET: Google search using curl
+function google() {
+	Q="$@"
+	GOOG_URL='https://www.google.com/search?tbs=li:1&q='; AGENT="Mozilla/5.0"
+	stream=$(curl -A "$AGENT" -skLm 10 "${GOOG_URL}${Q//\ /+}" | grep -oP '\/url\?q=.+?&amp' | sed 's|/url?q=||; s|&amp||'); echo -e "${stream//\%/\x}"
+}
+
+# NET: Google search via default browser
+function google-browser() {
+	search=""
+	for term in $@; do
+		search="$search%20$term"
+	done
+	xdg-open "http://www.google.com/search?q=$search"
+}
+
+# NET: Open your \$BROWSER to a modifiable note pad. (data:text/html, <html contenteditable>)
+function browser-notepad {
+	command $BROWSER_CHROME "data:text/html, <html contenteditable>"
+}
+
+# OS: Display the directories in your PATH in a clean format.
+function path-human-readable() {
+	tr : '
+	'<<<$PATH
+}
+
+# NET: Fastest DNS server
+# Requires +stats as a dig option.
+# cat ~/.digrc
+#	+stats +nocomments +nocmd +noquestion +recurse
+function dns-fast() {
+	parallel -j0 --tag \
+		dig @{} "$*" ::: 208.67.222.222 208.67.220.220 198.153.192.1 198.153.194.1 156.154.70.1 156.154.71.1 8.8.8.8 8.8.4.4 4.2.2.2 4.2.2.3 1.1.1.1 1.0.0.1 | \
+		grep Query | \
+		sort -nk5;
+}
+
+# NET: Check if DNS is leaking.
+function dns-checkleak() {
+	parallel -j0 --tag \
+		dig +short which.opendns.com txt "$*" ::: @208.67.220.220 @208.67.220.220
+
+	# Output will be 'I am not an OpenDNS resolver.' if there is a leak.
+}
+
+# CONTAINER: docker debug container
+function docker-debug() {
+	if [ -z "$1" ]; then
+		echo "usage: docker-debug CONTAINER-ID"
+		return 1
+	fi
+
+	docker run --rm -ti \
+		--pid="container:$1" \
+		--net="container:$1" \
+		--cap-add sys_admin \
+		--cap-add sys_ptrace \
+		hmarr/debug-tools
+}
+
+# CONTAINER: docker-debug-latest
+function docker-debug-latest() {
+	docker-debug "$(docker ps --latest --quiet)"
+}
 
 # FILE: merge two files with git merge-file
 function merge() {
-  local ext
-  [ $# -ne 2 ] && echo "Error: Need exactly two args." && return 1
-  [[ ! -r $1 || ! -r $2 ]] && echo "Error: One of the files is not readable." && return 1
-  if [[ ${1##*/} =~ '.' || ${2##*/} =~ '.' ]]; then
-    [ ${1##*.} != ${2##*.} ] && echo "Error: Files must have same extension." && return 1
-     ext=.${1##*.}
-  fi
-  touch tmp$ext # use empty file as the 'root' of the merge
-  cp $1 backup$ext
-  git merge-file $1 tmp$ext $2 # will write to file 1
-  mv $1 merge$ext
-  mv backup$ext $1
-  rm tmp$ext
-  echo "Files merged into \"merge$ext\"."
+	local ext
+	[ $# -ne 2 ] && echo "Error: Need exactly two args." && return 1
+	[[ ! -r $1 || ! -r $2 ]] && echo "Error: One of the files is not readable." && return 1
+	if [[ ${1##*/} =~ '.' || ${2##*/} =~ '.' ]]; then
+		[ ${1##*.} != ${2##*.} ] && echo "Error: Files must have same extension." && return 1
+		ext=.${1##*.}
+	fi
+	touch tmp$ext # use empty file as the 'root' of the merge
+	cp $1 backup$ext
+	git merge-file $1 tmp$ext $2 # will write to file 1
+	mv $1 merge$ext
+	mv backup$ext $1
+	rm tmp$ext
+	echo "Files merged into \"merge$ext\"."
 }
 
 
 # NET: kill process on specified port
 function portslay () {
-    kill -9 `lsof -i tcp:$1 | tail -1 | awk '{ print $2;}'`
+	kill -9 `lsof -i tcp:$1 | tail -1 | awk '{ print $2;}'`
 }
 
 # MISC: starts one or multiple args as programs in background
 function background() {
-    for ((i=2;i<=$#;i++)); do
-        ${@[1]} ${@[$i]} &> /dev/null &
-    done
+	for ((i=2;i<=$#;i++)); do
+		${@[1]} ${@[$i]} &> /dev/null &
+	done
 }
 
 # MISC: randpw() generates a secure random password with the length as a passed arg
 function randpw() {
-    [[ -z ${1} ]] && print "please specify length" && return 1
-    local length=$1
-    openssl rand -hex $length
+	[[ -z ${1} ]] && print "please specify length" && return 1
+	local length=$1
+	openssl rand -hex $length
 }
 
-# shameless stolen from http://ft.bewatermyfriend.org/comp/data/zsh/zfunct.html
-# MISC: zurl() create small urls via tinyurl.com needs wget, grep and sed. yes, it's a hack ;)
+# MISC: zurl() create small urls via tinyurl.com not using the API.
 function zurl() {
-    [[ -z ${1} ]] && print "please give an url to shrink." && return 1
-    local url=${1}
-    local tiny="http://tinyurl.com/create.php?url="
-    # print "${tiny}${url}" ; return
-    wget -O- -o /dev/null "${tiny}${url}"|grep -Eio "copy\('http://tinyurl.com/.*'"|grep -o "http://.*"|sed s/\'//
+	# go get github.com/ericchiang/pup
+	if hash curl && hash pup; then
+		curl -L -s 'https://tinyurl.com/create.php' \
+			--data-raw "source=create&url=$@&alias=" \
+			| pup '#copy_div attr{href}'
+	else
+		echo "please make sure curl and pup are installed" >&2
+		return 1
+	fi
 }
-
-
 
 # DOC: Globbing is simple? Sure .. See zshexpn(1) /Glob Qualifiers for details and come back ;)
 function jlob() {
@@ -108,8 +185,7 @@ function jlob() {
 }
 
 # FUN: Making the right decisions is hard :>
-function helpme()
-{
+function helpme() {
     print "Please wait.. i'll think about.."
     for i in 1 2 3; do echo -ne "."; sleep 0.3; done
     if [ $RANDOM -gt $RANDOM ]
@@ -121,8 +197,7 @@ function helpme()
 }
 
 # ARCHIVE: extracts archived files (maybe)
-function spex ()
-{
+function spex() {
     if [[ -f "$1" ]]
     then
         case "$1" in
@@ -149,9 +224,8 @@ function spex ()
     fi
 }
 
-# FUN: my is bigger than yours :)
-function dick()
-{
+# FUN: mine is bigger than yours :)
+function dick() {
     echo `uptime|grep days|sed 's/.*up \([0-9]*\) day.*/\1\/10+/'; cat \
         /proc/cpuinfo|grep '^cpu MHz'|awk '{print $4"/30 +";}';free|grep \
         '^Mem'|awk '{print $3"/1024/3+"}'; df -P -k -x nfs | grep -v \
@@ -160,8 +234,7 @@ function dick()
 }
 
 # MISC: mkdir && cd
-function mcd()
-{
+function mcd() {
     test -z "$1" && echo mkcd: no path given && return
     test -d "$1" && print "mkcd: Directory $1 already exists"
     mkdir -p -- "$1"
@@ -169,8 +242,7 @@ function mcd()
 }
 
 # SEARCH: search for various types or README file in dir and display them in $PAGER
-function readme()
-{
+function readme() {
     if [[ -x `which vimpager` ]]; then
         local VPAGER=vimpager
     else
@@ -186,8 +258,7 @@ function readme()
 }
 
 # ARCHIVE: Create a tar.gz from given directory
-function ctarz()
-{
+function ctarz() {
     local archive_name
     archive_name="$1.tar.gz"
     archive_name=${archive_name/\//}
@@ -196,8 +267,7 @@ function ctarz()
 }
 
 # ARCHIVE: Create a tar.bz2 from given directory
-function ctarj()
-{
+function ctarj() {
     local archive_name
     archive_name="$1.tar.bz2"
     archive_name=${archive_name/\//}
@@ -205,13 +275,11 @@ function ctarj()
     echo "Created archive $archive_name"
 }
 
-
 if [[ -e /etc/debian_version ]]; then
-    # HOOK: Calls sudo if nessecary and rehash
-    function aptitude()
-    {
-        cmd=("search" "show" "why");
-        if [[ ${cmd[(i)$1]} -le ${#cmd} ]]; then
+    # HOOK: Calls sudo if necessary rehash
+    function aptitude() {
+		cmd=("search" "show" "why");
+		if [[ ${cmd[(i)$1]} -le ${#cmd} ]]; then
             command aptitude $@
         else
             if (( EUID != 0 )); then
@@ -226,16 +294,28 @@ if [[ -e /etc/debian_version ]]; then
 fi
 
 # MISC: Clear all iptable rules
-function iptables-clear()
-{
+function iptables-clear() {
     sudo zsh -c "iptables -F; iptables -X; iptables -t nat -F; iptables -t nat -X; iptables -t mangle -F; iptables -t mangle -X; iptables -P INPUT ACCEPT; iptables -P FORWARD ACCEPT; iptables -P OUTPUT ACCEPT "
 }
 
 # MISC: Play youtube video in mplayer
-function ytplay() { mplayer -cache 5000 -idx -ao pulse `youtube-dl -g "$1"` }
+function ytplay() {
+	if hash mplayer; then
+		mplayer -cache 5000 -idx -ao pulse `youtube-dl -g "$1"`
+	else
+		echo "please make sure curl and pup are installed" >&2
+		return 1
+	fi
+}
 
-# NET: Grab all ips configured
-function all-ip { /sbin/ifconfig | grep "inet addr" | grep -v "127.0.0.1" | awk -F: '{print $2}' | awk '{print $1}'; }
+# NET: Grab all IPv4
+function all-ip() {
+	if (( EUID != 0 )); then
+		command sudo /sbin/ifconfig -a | grep inet | grep -vE 'inet6|127.0.0.1' | awk '{print $2}'
+	else
+		command /sbin/ifconfig -a | grep inet | grep -vE 'inet6|127.0.0.1' | awk '{print $2}'
+	fi
+}
 
 # NET: External ip6
 function ext-ip6 () { curl -6 http://v6.ipv6-test.com/api/myip.php; echo -n; }
@@ -245,7 +325,7 @@ function ext-ip () { wget http://ipecho.net/plain -O - -q ; echo; }
 
 # MISC: Get the absolute path
 function abs_path {
-    (cd "${1%/*}" &>/dev/null && printf "%s/%s" "$(pwd)" "${1##*/}")
+    (cd "${1%/*}" &>/dev/null && printf "%s/%s\n" "$(pwd)" "${1##*/}")
 }
 
 # MISC: Uses gitignore.io API to pull a generate .gitignore file
@@ -280,7 +360,7 @@ function ftp-fs {
 
 # FUN: Grab a random Mitch Hedberg quote and display it in console and with a notify-send alert.
 function mitch_hedberg_quote_web {
-    type curl >/dev/null 2>&1 || { echo >&2 "I require curl.  Aborting."; exit 1; }
+    type curl >/dev/null 2>&1 || { echo >&2 "I require curl.  Aborting."; return 1; }
     MITCHISMS=$(curl --silent https://gist.githubusercontent.com/gitdek/38cb982379ce70c073c5/raw/8064b215de6d07507606f59f8551b113713f2df2/mitch_quotes.txt | shuf -n 1)
     if hash notify-send 2>/dev/null; then
         notify-send --urgency=low -i info $MITCHISM
@@ -289,18 +369,12 @@ function mitch_hedberg_quote_web {
 }
 
 # FUN: This is specific to sending a quote from mitch_hedberg_quote_web to HipChat using the API.
-function mitch_hedberg_quote_hipchat {
-
+function mitch_hedberg_quote_hipchat() {
     MITCHISM=$(mitch_hedberg_quote_web |  python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))')
     # Grab a random quote and convert it into json for the API for hipchat.
-    #
     #QOTD=$(shuf -n 1 $MITCHISM | python -c 'import json,sys; sys.stdout.write(json.dumps(sys.stdin.read()))')
-
-    #echo "waaat $MITCHISM"
     curl -d '{"color": "green", "message": '$MITCHISM' , "notify": false, "message_format": "text"}' -H 'Content-Type: application/json' https://api.hipchat.com/v2/room/$HIPCHAT_API_ROOM/notification\?auth_token\=$HIPCHAT_API_AUTH_TOKEN
-
 }
-
 
 #### MARKS
 #

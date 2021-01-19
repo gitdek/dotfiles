@@ -1,0 +1,18 @@
+#  ██████╗!██╗!██████╗!
+#  ██╔══██╗██║██╔════╝!
+#  ██║!!██║██║██║!!███╗
+#  ██║!!██║██║██║!!!██║
+#  ██████╔╝██║╚██████╔╝
+#  ╚═════╝!╚═╝!╚═════╝!
+#
+#  ▓▓▓▓▓▓▓▓▓▓
+#  ▓ author ▓ dek <https://git.io/gitdek>
+#  ▓ repo   ▓ https://github.com/gitdek/dotfiles
+#  ▓ mirror ▓ https://git.io/.dekdotfiles
+#  ▓▓▓▓▓▓▓▓▓▓
+
++stats
++nocomments
++nocmd
++noquestion
++recurse

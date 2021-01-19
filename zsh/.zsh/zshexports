@@ -1,3 +1,15 @@
+#  ███████╗███████╗██╗!!██╗!!!!███████╗██╗!!██╗██████╗!!██████╗!██████╗!████████╗███████╗
+#  ╚══███╔╝██╔════╝██║!!██║!!!!██╔════╝╚██╗██╔╝██╔══██╗██╔═══██╗██╔══██╗╚══██╔══╝██╔════╝
+#  !!███╔╝!███████╗███████║!!!!█████╗!!!╚███╔╝!██████╔╝██║!!!██║██████╔╝!!!██║!!!███████╗
+#  !███╔╝!!╚════██║██╔══██║!!!!██╔══╝!!!██╔██╗!██╔═══╝!██║!!!██║██╔══██╗!!!██║!!!╚════██║
+#  ███████╗███████║██║!!██║!!!!███████╗██╔╝!██╗██║!!!!!╚██████╔╝██║!!██║!!!██║!!!███████║
+#  ╚══════╝╚══════╝╚═╝!!╚═╝!!!!╚══════╝╚═╝!!╚═╝╚═╝!!!!!!╚═════╝!╚═╝!!╚═╝!!!╚═╝!!!╚══════╝
+#  ▓▓▓▓▓▓▓▓▓▓
+#  ▓ author ▓ dek <https://git.io/gitdek>
+#  ▓ repo   ▓ https://github.com/gitdek/dotfiles
+#  ▓ mirror ▓ https://git.io/.dekdotfiles
+#  ▓▓▓▓▓▓▓▓▓▓
+
 
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -33,8 +45,8 @@ PERL_MB_OPT="--install_base \"/home/dek/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/dek/perl5"; export PERL_MM_OPT;
 
 PROJECTS="$HOME/projects"; export PROJECTS;
-export GEM_HOME="$HOME/gems"
-export PATH="$HOME/gems/bin:$PATH"
+#export GEM_HOME="$HOME/gems"
+#export PATH="$HOME/gems/bin:$PATH"
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/bin"
 export GOPATH="$HOME/go" # or any directory to put your Go code
@@ -45,6 +57,14 @@ LLD_LINK_PATH="/usr/lib/llvm-10"; export LLD_LINK_PATH;
 export PATH="$PATH:$LLD_LINK_PATH:$LLD_LINK_PATH/bin"
 export SSH_KEY_PATH="~/.ssh/id_rsa"
 
+export DSTAT_OPTS="--bw --fs --socket --profile --net --top-latency --dstat-mem --top-io --top-mem --top-cpu-adv -a --noupdate"
+# running `dstat 5` will now use the above options
 
 
+export WORKON_HOME="~/.virtualenvs"
 
+export TODO_DIR="/home/dek/TODO"
+export TODOTXT_CFG_FILE="/home/dek/.config/todo/todo.cfg"
+
+export BROWSER_CHROME=~/.local/bin/chrome
+export BROWSER_FIREFOX=~/.local/bin/firefox
