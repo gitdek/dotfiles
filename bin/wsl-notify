@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+	echo "Usage: ./wsl-notify <message> [title]"
+	exit
+fi
+
+MESSAGE=$1
+TITLE=$2
+
+if [ $# -lt 2 ]; then
+	TITLE=`whoami`@`date -R`
+fi
+
+
+if hash powershell.exe; then
+	command	powershell.exe "New-BurntToastNotification -Text \"$MESSAGE\",\"$TITLE\""
+fi
+

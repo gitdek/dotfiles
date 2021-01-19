@@ -1,0 +1,309 @@
+#!/usr/bin/perl -w
+
+use warnings; use strict;
+
+BEGIN {
+    our $AUTHOR  = 'dek';
+    our $VERSION = '0.0.1';
+}
+## Settings
+our $daemon   = 0; #run as a daemon or not (0/1)
+our $logging  = 0; #logging on or off (0/1)
+our $logfile  = 'proxydaemon.log';
+
+## Language
+my $lang_daemon="Process (%s) has entered into background.\n";
+my $lang_usage="Usage: $0 <local_host> <local_port> [auth_login(:auth_pass)]\n".
+        "Note: the auth_pass must be an md5 (hex) hash\n".
+        "eg: $0 localhost 34567 test:098f6bcd4621d373cade4e832627b4f6\n";
+my $lang_bind="Could not bind to %s:%s\n";
+my $lang_sockopen="Could not open a socket to %s:%s\n";
+my $lang_file_open="Could not open log file.";
+
+## Usage
+if (!$ARGV[1]) { die $lang_usage; }
+
+## Requirements
+# Install using: perl -MCPAN -e'install %module'
+use IO::Socket::INET;
+use Digest::MD5 qw(md5_hex);
+use Net::Interface;
+
+##-md5 option
+if ($ARGV[0] eq '-getmd5') {
+  shift;
+  print md5_hex(shift);
+  exit(0);
+}
+
+## Arguments
+our $local_host = shift;
+our $local_port = shift;
+our $out_interface = shift || 'all'; # Use all interfaces for outgoing connections.
+our $auth_login = shift;
+our $auth_pass;
+
+our %out_ifaces = get_interface_addr($out_interface);
+our @all_ips;
+
+foreach my $key (keys %out_ifaces) {
+    push(@all_ips,@{$out_ifaces{$key}});
+}
+
+#Parse auth part
+if ($auth_login && $auth_login =~ m/:/) {
+    ($auth_login,$auth_pass)=split(':', $auth_login);
+}
+
+#Open listening port
+$SIG{'CHLD'} = 'IGNORE';
+my $bind = socks_open(  Listen=>5,
+                        LocalAddr=>$local_host.':'.$local_port,
+                        ReuseAddr=>1)
+                        or die sprintf($lang_bind,$local_host,$local_port);
+
+#Run as daemon
+if ($daemon) {
+  our $pid=fork();
+  if ($pid) {
+    printf($lang_daemon,$pid);
+    close(); exit();
+  }
+}
+
+# Start client
+our $client;
+while($client = $bind->accept()) {
+    $client->autoflush();
+    if (fork()){ socks_close($client); }
+    else { socks_close($bind); new_client($client); exit(); }
+}
+
+# New client subroutine
+sub new_client {
+    my($t, $i, $buff, $ord, $success);
+    my $client = shift;
+
+    socks_sysread($client, $buff, 1);
+    if (ord($buff) != 5) { return; } #must be SOCKS 5
+
+    socks_sysread($client, $buff, 1);
+    $t=ord($buff);
+    unless(socks_sysread($client, $buff, $t) == $t) { return; }
+
+    $success=0;
+    for($i=0; $i < $t; $i++) {
+     $ord = ord(substr($buff, $i, 1));
+     if ($ord == 0 && !$auth_login) {
+       socks_syswrite($client, "\x05\x00", 2);
+       $success++;
+       last;
+     }
+     elsif ($ord == 1 && $auth_login) {
+       #GSSAPI auth support
+       #socks_syswrite($client, "\x05\x01", 2);
+       #$success++;
+       #last;
+     }
+     elsif ($ord == 2 && $auth_login) {
+       unless(do_login_auth($client)){ return; }
+       $success++;
+       last;
+     }
+    }
+
+    if ($success) {
+     $t = socks_sysread($client, $buff, 3);
+
+     if (substr($buff, 0, 1) eq "\x05") {
+       if (ord(substr($buff, 2, 1)) == 0) { # reserved
+         my($host, $raw_host) = socks_get_host($client);
+         if (!$host) { return; }
+         my($port, $raw_port) = socks_get_port($client);
+         if (!$port) { return; }
+         $ord = ord(substr($buff, 1, 1));
+         $buff = "\x05\x00\x00".$raw_host.$raw_port;
+         socks_syswrite($client, $buff, length($buff));
+         socks_do($ord, $client, $host, $port);
+       }
+     }
+    }
+    else { socks_syswrite($client, "\x05\xFF", 2); }
+
+    socks_close($client);
+}
+
+# Do login authentication subroutine
+sub do_login_auth {
+    my($buff, $login, $pass);
+    my $client = shift;
+
+    socks_syswrite($client, "\x05\x02", 2);
+    socks_sysread($client, $buff, 1);
+
+    if (ord($buff) == 1) {
+        socks_sysread($client, $buff, 1);
+        socks_sysread($client, $login, ord($buff));
+        socks_sysread($client, $buff, 1);
+        socks_sysread($client, $pass, ord($buff));
+
+        if ($auth_login && $auth_pass && $login eq $auth_login && md5_hex($pass) eq $auth_pass) {
+            socks_syswrite($client, "\x01\x00", 2);
+            return 1;
+        }
+        else { socks_syswrite($client, "\x01\x01", 2); }
+    }
+
+    socks_close($client);
+    return 0;
+}
+
+# Get socks hostname subrouteine
+sub socks_get_host {
+    my $client = shift;
+    my ($t, $ord, $raw_host);
+    my $host = "";
+    my @host;
+
+    socks_sysread($client, $t, 1);
+    $ord = ord($t);
+    if ($ord == 1) {
+    socks_sysread($client, $raw_host, 4);
+    @host = $raw_host =~ /(.)/g;
+    $host = ord($host[0]).'.'.ord($host[1]).'.'.ord($host[2]).'.'.ord($host[3]);
+    } elsif ($ord == 3) {
+    socks_sysread($client, $raw_host, 1);
+    socks_sysread($client, $host, ord($raw_host));
+    $raw_host .= $host;
+    } elsif ($ord == 4) {
+     #ipv6
+    }
+
+    return ($host, $t.$raw_host);
+}
+
+#Get socks port subroutine
+sub socks_get_port {
+    my $client = shift;
+    my ($raw_port, $port);
+    socks_sysread($client, $raw_port, 2);
+    $port = ord(substr($raw_port, 0, 1)) << 8 | ord(substr($raw_port, 1, 1));
+    return ($port, $raw_port);
+}
+
+#Socks command
+sub socks_do {
+    my($t, $client, $host, $port) = @_;
+
+    if ($t == 1) { socks_connect($client, $host, $port); }
+    elsif ($t == 2) { socks_bind($client, $host, $port); }
+    elsif ($t == 3) { socks_udp_associate($client, $host, $port); }
+    else { return 0; }
+
+    return 1;
+}
+
+#Connect socks client to target server
+our $target;
+sub socks_connect {
+    my($client, $host, $port) = @_;
+
+    my $random_ip = $all_ips[rand scalar @all_ips];
+
+    my $target = socks_open(LocalHost => $random_ip,
+                          PeerAddr => $host.':'.$port,
+                          Proto => 'tcp',
+                          Type => SOCK_STREAM)
+                          or die sprintf($lang_sockopen,$host,$port);
+
+    unless($target) { return; }
+
+    $target->autoflush();
+    while($client || $target) {
+    my $rin = "";
+    vec($rin, fileno($client), 1) = 1 if $client;
+    vec($rin, fileno($target), 1) = 1 if $target;
+    my($rout, $eout);
+    select($rout = $rin, undef, $eout = $rin, 120);
+    if (!$rout  &&  !$eout) { return; }
+    my $cbuffer = "";
+    my $tbuffer = "";
+
+    if ($client && (vec($eout, fileno($client), 1) || vec($rout, fileno($client), 1))) {
+     my $result = socks_sysread($client, $tbuffer, 1024);
+     if (!defined($result) || !$result) { return; }
+    }
+
+    if ($target  &&  (vec($eout, fileno($target), 1)  || vec($rout, fileno($target), 1))) {
+     my $result = socks_sysread($target, $cbuffer, 1024);
+     if (!defined($result) || !$result) { return; }
+    }
+
+    while (my $len = length($tbuffer)) {
+     my $res = socks_syswrite($target, $tbuffer, $len);
+     if ($res > 0) { $tbuffer = substr($tbuffer, $res); } else { return; }
+    }
+
+    while (my $len = length($cbuffer)) {
+     my $res = socks_syswrite($client, $cbuffer, $len);
+     if ($res > 0) { $cbuffer = substr($cbuffer, $res); } else { return; }
+    }
+    }
+}
+
+sub socks_bind {
+    my($client, $host, $port) = @_;
+    # not supported yet
+}
+
+sub socks_udp_associate {
+    my($client, $host, $port) = @_;
+    # not supported yet
+}
+
+## Logging functions
+our $log;
+sub socks_open {
+  socks_log('|open>');
+  return IO::Socket::INET->new(@_);
+}
+sub socks_close {
+  my $sock = shift;
+  socks_log('<close|');
+  return $sock->close();
+}
+sub socks_sysread {
+  my $result = sysread($_[0], $_[1], $_[2]);
+  socks_log("<read|$_[1]");
+  return $result;
+}
+sub socks_syswrite {
+  socks_log("|write>$_[1]");
+  return syswrite($_[0], $_[1], $_[2]);
+}
+
+sub socks_log {
+  if (!$logging){ return; }
+  open(LOG, ">>$logfile") or die $lang_file_open;;
+  print LOG shift;
+  print LOG "\n";
+  close(LOG);
+}
+
+sub get_interface_addr {
+    my $iface = shift || 'all';
+
+    my %addresses = map { (
+            $_ => [ map { Net::Interface::inet_ntoa($_) }
+                $_->address,
+            ]);
+        } $iface eq 'all'
+            ?
+            Net::Interface->interfaces
+            :
+            Net::Interface->new($iface);
+
+    return %addresses;
+}
+
+#EOF
