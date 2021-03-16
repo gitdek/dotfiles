@@ -67,6 +67,8 @@ promptinit
 # automatically remove duplicates from these arrays
 typeset -gU path cdpath manpath fpath
 
+# typeset -g ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE='20'
+
 setopt nomatch
 
 autoload -U history-search-end

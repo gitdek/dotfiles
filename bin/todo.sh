@@ -657,16 +657,14 @@ export PRI_C=$LIGHT_BLUE    # color for C priority
 export PRI_X=$WHITE         # color unless explicitly defined
 
 # Default project, context, date, item number, and metadata key:value pairs colors.
-export COLOR_PROJECT=$DEFAULT
-export COLOR_CONTEXT=$DEFAULT
-export COLOR_DATE=$DEFAULT
-export COLOR_NUMBER=$DEFAULT
-export COLOR_META=$DEFAULT
-
+export COLOR_PROJECT=$NONE
+export COLOR_CONTEXT=$NONE
+export COLOR_DATE=$NONE
+export COLOR_NUMBER=$NONE
+export COLOR_META=$NONE
 
 # Default highlight colors.
-export COLOR_DONE=$DEFAULT
-   # color for done (but not yet archived) tasks
+export COLOR_DONE=$LIGHT_GREY   # color for done (but not yet archived) tasks
 
 # Default sentence delimiters for todo.sh append.
 # If the text to be appended to the task begins with one of these characters, no

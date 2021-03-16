@@ -37,6 +37,17 @@ else
     export EDITOR='vim'
 fi
 
+
+# LESS man page colors.
+export LESS_TERMCAP_mb=$'\E[01;31m'
+export LESS_TERMCAP_md=$'\E[01;31m'
+export LESS_TERMCAP_me=$'\E[0m'
+export LESS_TERMCAP_se=$'\E[0m'
+export LESS_TERMCAP_so=$'\E[01;44;33m'
+export LESS_TERMCAP_ue=$'\E[0m'
+export LESS_TERMCAP_us=$'\E[01;32m'
+
+
 # Setup perl
 PATH="/home/dek/perl5/bin${PATH:+:${PATH}}"; export PATH;
 PERL5LIB="/home/dek/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
@@ -51,7 +62,7 @@ export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/bin"
 export GOPATH="$HOME/go" # or any directory to put your Go code
 export PATH="$PATH:/usr/local/go/bin:$GOPATH/bin"
-export DISPLAY=:0
+
 export DOCKER_BUILDKIT=0
 LLD_LINK_PATH="/usr/lib/llvm-10"; export LLD_LINK_PATH;
 export PATH="$PATH:$LLD_LINK_PATH:$LLD_LINK_PATH/bin"
@@ -60,11 +71,7 @@ export SSH_KEY_PATH="~/.ssh/id_rsa"
 export DSTAT_OPTS="--bw --fs --socket --profile --net --top-latency --dstat-mem --top-io --top-mem --top-cpu-adv -a --noupdate"
 # running `dstat 5` will now use the above options
 
-
 export WORKON_HOME="~/.virtualenvs"
-
-export TODO_DIR="/home/dek/TODO"
-export TODOTXT_CFG_FILE="/home/dek/.config/todo/todo.cfg"
 
 export BROWSER_CHROME=~/.local/bin/chrome
 export BROWSER_FIREFOX=~/.local/bin/firefox

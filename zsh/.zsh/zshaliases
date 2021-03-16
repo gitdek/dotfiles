@@ -11,16 +11,30 @@
 #  ▓ mirror ▓ https://git.io/.dekdotfiles
 #  ▓▓▓▓▓▓▓▓▓▓
 
+ASKRELOAD=true
 # zsh aliases
-alias zshconfig="vi ~/.zshrc"
-alias zshconfigreload="echo reloading; source ~/.zshrc"
-alias zshaliases="vim ~/.zsh/zshaliases"
-alias zshfunctions="vim ~/.zsh/zshfunctions"
-alias zshexports="vim ~/.zsh/zshexports"
+alias zshconfig="vi ~/.zshrc; _askreload"
+alias zshconfigreload="echo -e '\e[1;32m Reloading \e[0m ...'; source ~/.zshrc"
+alias zshaliases="vim ~/.zsh/zshaliases; _askreload"
+alias zshfunctions="vim ~/.zsh/zshfunctions; _askreload"
+alias zshexports="vim ~/.zsh/zshexports; _askreload"
 alias ohmyzsh="vim ~/.oh-my-zsh"
-alias vimconfig="vim ~/.vimrc"
-alias tmuxconfig="vim ~/.tmux.conf"
 
+# vim aliases
+alias vimconfig="vi ~/.vimrc"
+
+function _askreload() {
+	if [[ "$ASKRELOAD"  == "true" ]]; then
+		if dialog --yesno "Reload?" 5 50; then
+			zshconfigreload
+		fi
+	fi
+#	done <  <(inotifywait -q -e modify ~/.vimrc)
+}
+
+alias viml="vim -c \"normal '0\"" # Open the last file you edited in vim
+
+alias tmuxconfig="vim ~/.tmux.conf"
 # most used commands in history
 alias top10='print -l $$${(o)history%% *} | uniq -c | sort -nr | head -n 10'
 alias psg='ps ax|grep -v grep|grep -i'
@@ -30,6 +44,7 @@ alias today="date +\"%F\""
 alias fspc='df -h .'
 alias r='fc -e :'
 
+alias tmuxconfig="vim ~/.tmux.conf"
 alias tmux="tmux -2"
 alias tmuxa="tmux attach -t"
 alias tmuxn="tmux new -s"
@@ -40,11 +55,12 @@ alias please="sudo"
 
 alias viml="vim -c \"normal '0\"" # Open the last file you edited in vim
 
-alias todo="todo.sh"
-alias todoe="todo.sh edit todo"
-alias todoconfig="vim /home/dek/.config/todo/todo.cfg"
+alias todo="/home/dek/bin/todo.sh"
+complete -F _todo todo
+alias todoe="/home/dek/bin/todo.sh edit todo"
+alias todoconfig="vim $HOME/.todo/config"
 # TODO_DIR is an export so it is defined in zsh exports. See alias zshexports.
-alias todoh="todo | ansi2html | tee $TODO_DIR/todo.html && cd $TODO_DIR && xdg-open todo.html"
+alias todoh="todo | ansi2html | tee todo.html && xdg-open todo.html"
 
 alias mux="tmuxinator"
 alias wtig='while; do; tig --all; sleep 1; done'
@@ -108,8 +124,6 @@ alias gdbrun='gdb -ex=r --args'
 
 alias -s {zip,ZIP}="unzip -l"
 
-alias weather="curl http://wttr.in/"
-
 # quick hack to make watch work with aliases
 alias watch='watch -c -d -t -p'
 
@@ -117,4 +131,5 @@ alias watch='watch -c -d -t -p'
 # alias kali='docker run -it kalilinux/kali-bleeding-edge -v /bin/bash
 alias kali='docker run --rm -i -t -p 9990-9999:9990-9999 -v $HOME/.kali:/root/.kali -v /tmp/kali:/tmp/data --name kali kalilinux/kali-bleeding-edge'
 alias metasploit='docker run --rm -i -t -p 9990-9999:9990-9999 -v $HOME/.msf4:/root/.msf4 -v /tmp/msf:/tmp/data --name msf phocean/msf'
+
 

@@ -17,11 +17,11 @@ zstyle ':completion:*' list-colors ''
 zstyle ':completion:*' insert-unambiguous true
 
 # Make completion (yeah im getting fucking lazy)
-#compile=(install clean remove uninstall deinstall)
-#compctl -k compile make
+compile=(install clean remove uninstall deinstall)
+compctl -k compile make
 
-zstyle ':completion:*' use-cache on
-zstyle ':completion:*' cache-path ~/.zsh/cache
+#zstyle ':completion:*' use-cache on
+#zstyle ':completion:*' cache-path ~/.zsh/cache
 
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _complete _match _approximate
@@ -32,12 +32,12 @@ zstyle ':completion:*:approximate:*' max-errors 3 numeric
 zstyle ':completion:*:*:kill:*' menu yes select
 zstyle ':completion:*:kill:*'   force-list always
 
-#compctl -k ping telnet ncftp host nslookup irssi rlogin ftp weechat-curses
+compctl -k ping telnet ncftp host nslookup irssi rlogin ftp weechat-curses
 
 compctl -g '*.(pdf|ps|PDF|PS)' + -g '*(-/)' evience xpdf
 compctl -g '*.(jpg|JPG|jpeg|JPEG|gif|GIF|png|PNG|bmp)' + -g '*(-/)' eog feh gimp
 compctl -g "*.html *.htm" + -g "*(-/) .*(-/)" + -H 0 '' w3m lynx links links2 elinks firefox dillo
-#compctl -g "*.scala" + -g "*(-/) .*(-/)" + -H 0 '' scalac
+compctl -g "*.scala" + -g "*(-/) .*(-/)" + -H 0 '' scalac
 compctl -g "*.rar *.tar *.bz2 *.gz *.ace *.deb *.izs *.tar *.tbz2 *.zip *.Z *.shar" + -g "*(-/) .*(-/)" + -H 0 '' spex
 
 # highlight matching part of available completions
@@ -83,37 +83,37 @@ zstyle ':completion:*:manuals.(^1*)' insert-sections true
 # Installation: pm2 completion >> ~/.bashrc  (or ~/.zshrc)
 #
 
-COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}
-COMP_WORDBREAKS=${COMP_WORDBREAKS/@/}
-export COMP_WORDBREAKS
-
-if type complete &>/dev/null; then
-  _pm2_completion () {
-    local si="$IFS"
-    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$COMP_CWORD" \
-                           COMP_LINE="$COMP_LINE" \
-                           COMP_POINT="$COMP_POINT" \
-                           pm2 completion -- "${COMP_WORDS[@]}" \
-                           2>/dev/null)) || return $?
-    IFS="$si"
-  }
-  complete -o default -F _pm2_completion pm2
-elif type compctl &>/dev/null; then
-  _pm2_completion () {
-    local cword line point words si
-    read -Ac words
-    read -cn cword
-    let cword-=1
-    read -l line
-    read -ln point
-    si="$IFS"
-    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
-                       COMP_LINE="$line" \
-                       COMP_POINT="$point" \
-                       pm2 completion -- "${words[@]}" \
-                       2>/dev/null)) || return $?
-    IFS="$si"
-  }
-  compctl -K _pm2_completion + -f + pm2
-fi
-###-end-pm2-completion-###
+#COMP_WORDBREAKS=${COMP_WORDBREAKS/=/}
+#COMP_WORDBREAKS=${COMP_WORDBREAKS/@/}
+#export COMP_WORDBREAKS
+#
+#if type complete &>/dev/null; then
+#  _pm2_completion () {
+#    local si="$IFS"
+#    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$COMP_CWORD" \
+#                           COMP_LINE="$COMP_LINE" \
+#                           COMP_POINT="$COMP_POINT" \
+#                           pm2 completion -- "${COMP_WORDS[@]}" \
+#                           2>/dev/null)) || return $?
+#    IFS="$si"
+#  }
+#  complete -o default -F _pm2_completion pm2
+#elif type compctl &>/dev/null; then
+#  _pm2_completion () {
+#    local cword line point words si
+#    read -Ac words
+#    read -cn cword
+#    let cword-=1
+#    read -l line
+#    read -ln point
+#    si="$IFS"
+#    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
+#                       COMP_LINE="$line" \
+#                       COMP_POINT="$point" \
+#                       pm2 completion -- "${words[@]}" \
+#                       2>/dev/null)) || return $?
+#    IFS="$si"
+#  }
+#  compctl -K _pm2_completion + -f + pm2
+#fi
+####-end-pm2-completion-###
