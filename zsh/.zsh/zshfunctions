@@ -289,7 +289,7 @@ function dick() {
 # MISC: mkdir && cd
 function mcd() {
     test -z "$1" && echo mkcd: no path given && return
-    test -d "$1" && print "mkcd: Directory $1 already exists"
+    test -d "$1" && print "mkcd: Directory $1 already exists, so let's just cd in..." && cd -- "$1" && return
     mkdir -p -- "$1"
     cd -- "$1"
 }
@@ -537,3 +537,24 @@ function ask()          # See 'killps' for example of use.
     esac
 }
 
+
+function jog() {
+      sqlite3 $HOME/.histdb/zsh-history.db "
+  SELECT
+      replace(commands.argv, '
+  ', '
+  ')
+  FROM commands
+  JOIN history ON history.command_id = commands.id
+  JOIN places ON history.place_id = places.id
+  WHERE history.exit_status = 0
+  AND dir = '${PWD}'
+  AND places.host = '${HOST}'
+  AND commands.argv != 'jog'
+  AND commands.argv NOT LIKE 'z %'
+  AND commands.argv NOT LIKE 'cd %'
+  AND commands.argv != '..'
+  ORDER BY start_time DESC
+  LIMIT 10
+  "
+}

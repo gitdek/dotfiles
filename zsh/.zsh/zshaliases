@@ -11,15 +11,26 @@
 #  ▓ mirror ▓ https://git.io/.dekdotfiles
 #  ▓▓▓▓▓▓▓▓▓▓
 
+
+
+if (( $+commands[vim] )) ; then
+    alias vi='nvim -p'
+    alias vim='nvim -p'
+    alias view='nvim -R'
+elif (( $+commands[vi] )) ; then
+    alias vim='nvim'
+fi
+
 ASKRELOAD=true
 # zsh aliases
 alias zshconfig="vi ~/.zshrc; _askreload"
 alias zshconfigreload="echo -e '\e[1;32m Reloading \e[0m ...'; source ~/.zshrc"
-alias zshaliases="vim ~/.zsh/zshaliases; _askreload"
+alias zshaliases="$EDITOR ~/.zsh/zshaliases; _askreload"
 alias zshfunctions="vim ~/.zsh/zshfunctions; _askreload"
 alias zshexports="vim ~/.zsh/zshexports; _askreload"
 alias ohmyzsh="vim ~/.oh-my-zsh"
 
+alias terpslurper='echo lol'
 # vim aliases
 alias vimconfig="vi ~/.vimrc"
 
@@ -80,14 +91,6 @@ alias laf='ls -d -- .*(^/)' # only show dot-files
 alias lsd='ls -ld -- ^(\.)*(/)'   # show all directories
 alias lsf='ls -d -- *(^/)'  # only show files
 alias lse='ls -d -- *(/^F)' # only show empty directories
-
-if (( $+commands[vim] )) ; then
-    alias vi='vim -p'
-    alias vim='vim -p'
-    alias view='vim -R'
-elif (( $+commands[vi] )) ; then
-    alias vim='vi'
-fi
 
 if (( $+commands[links2] )) ; then
     export LINKS_BROWSER="links2"

@@ -56,6 +56,15 @@ set backup                        " make backup files
 set backupdir=~/.vim/dirs/backups " where to put backup files
 set undofile                      " persistent undos - undo after you re-open the file
 set undodir=~/.vim/dirs/undos
+
+if !has('nvim')
+	  set viminfo+=n~/vim/viminfo
+"  else
+	    " Do nothing here to use the neovim default
+		"   " or do soemething like:
+		"     " set viminfo+=n~/.shada
+endif
+		"
 set viminfo+=n~/.vim/dirs/viminfo
 
 "██╗!!!!!███████╗!█████╗!██████╗!███████╗██████╗!
@@ -158,16 +167,16 @@ call vundle#rc()
 " Vundle
 Bundle 'gmarik/vundle'
 " Better file browser
-Bundle 'scrooloose/nerdtree'
+" Bundle 'scrooloose/nerdtree'
 " Code commenter
-Bundle 'scrooloose/nerdcommenter'
+" Bundle 'scrooloose/nerdcommenter'
 " Git integration
 Bundle 'motemen/git-vim'
 " Tab list panel
 Bundle 'kien/tabman.vim'
 " Airline and themes
-Plugin 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+" Bundle 'vim-airline/vim-airline'
+" Bundle 'vim-airline/vim-airline-themes'
 " Terminal Vim with 256 colors colorscheme
 Bundle 'fisadev/fisa-vim-colorscheme'
 " Consoles as buffers
@@ -180,11 +189,11 @@ Bundle 'tpope/vim-surround'
 Bundle 'Townk/vim-autoclose'
 " Python mode (indentation, doc, refactor, lints, code checking, motion and
 " operators, highlighting, run and ipdb breakpoints)
-Bundle 'klen/python-mode'
+" Bundle 'klen/python-mode'
 " Better autocompletion
 Bundle 'Shougo/neocomplcache.vim'
 " Git diff icons on the side of the file lines
-Bundle 'airblade/vim-gitgutter'
+" Bundle 'airblade/vim-gitgutter'
 " Drag visual blocks arround
 Bundle 'fisadev/dragvisuals.vim'
 " Python code checker
@@ -246,18 +255,21 @@ imap <M-Down> <ESC><c-w>j
 "setup gitgutter
 " fix some problems with gitgutter and other plugins (originally jedi-vim, but
 " left just in case, and it's faster)
-let g:gitgutter_max_signs = 500
-let g:gitgutter_eager = 1
-let g:gitgutter_realtime = 1
-let g:gitgutter_highlight_lines = 1
-
+" #let g:gitgutter_max_signs = 500
+" let g:gitgutter_eager = 1
+" let g:gitgutter_realtime = 1
+" let g:gitgutter_highlight_lines = 1
+"
 "setup tasklist
 " show pending tasks list
-map <Leader>t :TaskList<CR>
+" map <Leader>t :TaskList<CR>
+map <Leader>t :TaskListToggle<CR>
+" map <Leader>t <Plug>TaskListToggle
 " show task list window on the bottom
 let g:tlWindowPosition = 1
+let g:tlRememberPosition = 0
 " setup tokens we want to parse
-let g:tlTokenList = ['FIXME', 'TODO', 'BUG', 'NOTE']
+let g:tlTokenList = ["FIXME", "TO-DO", "XXX", "NOTE", "BUG", "CHANGED", "OPTIMIZE"]
 
 "setup neocompl
 " Disable AutoComplPop.
@@ -314,7 +326,9 @@ endif
 "colors for gvim
 if has('gui_running')
 	colorscheme wombat
+	set guifont=Source\ Code\ Pro\ for\ Powerline\ Semibold\ 10
 endif
+
 
 "setup yankring
 let g:yankring_history_dir = "~/.vim/dirs/" "history dir
@@ -427,12 +441,12 @@ endfunc
 
 call s:Enable()
 
-function! GitStatus()
-	let [a,m,r] = GitGutterGetHunkSummary()
-	return printf('+%d ~%d -%d', a, m, r)
-endfunction
+"function! GitStatus()
+"	let [a,m,r] = GitGutterGetHunkSummary()
+"	return printf('+%d ~%d -%d', a, m, r)
+"endfunction
 
-"setup ranger
+" setup ranger
 
 function! RangeChooser()
     let temp = tempname()
@@ -468,7 +482,7 @@ command! -bar RangerChooser call RangeChooser()
 nnoremap <leader>r :<C-U>RangerChooser<CR>
 
 "setup statusline using airline and gitgutter
-set statusline=%!airline#statusline(1)
-set statusline+=%{GitStatus()}
+"set statusline=%!airline#statusline(1)
+"set statusline+=%{GitStatus()}
 
 

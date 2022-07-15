@@ -20,8 +20,8 @@ zstyle ':completion:*' insert-unambiguous true
 compile=(install clean remove uninstall deinstall)
 compctl -k compile make
 
-#zstyle ':completion:*' use-cache on
-#zstyle ':completion:*' cache-path ~/.zsh/cache
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
 
 # Fuzzy matching of completions for when you mistype them:
 zstyle ':completion:*' completer _complete _match _approximate
@@ -72,8 +72,49 @@ zstyle ':completion:*:*:cd:*:directory-stack' menu yes select=1 interactive
 # arrows (case insensitive completion!).
 zstyle ':completion:*-case' menu select=1 interactive
 
+
+zstyle ':fzf-tab:complete:*' fzf-bindings \
+  'ctrl-v:execute-silent({_FTB_INIT_}code "$realpath")' \
+    'ctrl-e:execute-silent({_FTB_INIT_}kwrite "$realpath")'
+zstyle ':fzf-tab:complete:systemctl-*:*' fzf-preview 'SYSTEMD_COLORS=1 systemctl status $word'
+
+
+
+zstyle ':fzf-tab:complete:*:*' fzf-preview 'less ${(Q)realpath}'
+export LESSOPEN='|~/.lessfilter %s'
+
+
 zstyle ':completion:*:manuals' separate-sections true
 zstyle ':completion:*:manuals.(^1*)' insert-sections true
+zstyle ':fzf-tab:*' fzf-bindings 'space:accept'
+zstyle ':fzf-tab:*' accept-line enter
+
+
+# disable sort when completing `git checkout`
+zstyle ':completion:*:git-checkout:*' sort false
+# set descriptions format to enable group support
+zstyle ':completion:*:descriptions' format '[%d]'
+# set list-colors to enable filename colorizing
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+# preview directory's content with exa when completing cd
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+# switch group using `,` and `.`
+zstyle ':fzf-tab:*' switch-group ',' '.'
+
+
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+zstyle ':fzf-tab:complete:cd:*' popup-pad 30 0
+
+
+
+#zstyle ':completion:*:descriptions' format
+#zstyle ':fzf-tab:*'
+
+
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
+#zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-preview \
+#  [[ $group == "[process ID]" ]] && ps --pid=$word -o cmd --no-headers -w -w'
+zstyle ':fzf-tab:complete:(kill|ps):argument-rest' fzf-flags --preview-window=down:3:wrap
 
 
 
