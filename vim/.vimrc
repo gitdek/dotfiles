@@ -26,7 +26,7 @@ set noswapfile                                     "disable swap files
 set autoread                                       "automatically read changes in the file
 set hidden                                         "hide buffers instead of closing them even if they contain unwritten changes
 set backspace=indent,eol,start                     "make backspace behave properly in insert mode
-set clipboard^=unnamedplus						   "operator ^= prepends the unnamedplus setting, rather than appending it.
+"set clipboard^=unnamedplus						   "operator ^= prepends the unnamedplus setting, rather than appending it.
 set wildmenu                                       "better menu with completion in command mode
 set wildmode=longest,list,full
 set completeopt=longest,menuone,preview,noinsert   "better insert mode completions
@@ -51,11 +51,11 @@ set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab
 set history=10000
 
 " Better backup, swap and undos storage
-set directory=~/.vim/dirs/tmp     " directory to place swap files in
+set directory=$HOME/.vim/dirs/tmp     " directory to place swap files in
 set backup                        " make backup files
-set backupdir=~/.vim/dirs/backups " where to put backup files
+set backupdir=$HOME/.vim/dirs/backups " where to put backup files
 set undofile                      " persistent undos - undo after you re-open the file
-set undodir=~/.vim/dirs/undos
+set undodir=$HOME/.vim/dirs/undos
 
 if !has('nvim')
 	  set viminfo+=n~/vim/viminfo
@@ -65,7 +65,12 @@ if !has('nvim')
 		"     " set viminfo+=n~/.shada
 endif
 		"
+
 set viminfo+=n~/.vim/dirs/viminfo
+
+" Force vim to load python3 before python2
+if has('python3')
+endif
 
 "██╗!!!!!███████╗!█████╗!██████╗!███████╗██████╗!
 "██║!!!!!██╔════╝██╔══██╗██╔══██╗██╔════╝██╔══██╗
@@ -166,6 +171,7 @@ set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 " Vundle
 Bundle 'gmarik/vundle'
+
 " Better file browser
 " Bundle 'scrooloose/nerdtree'
 " Code commenter
@@ -197,7 +203,7 @@ Bundle 'Shougo/neocomplcache.vim'
 " Drag visual blocks arround
 Bundle 'fisadev/dragvisuals.vim'
 " Python code checker
-Bundle 'pyflakes.vim'
+" Bundle 'pyflakes.vim'
 " Search results counter
 Bundle 'IndexedSearch'
 " Gvim colorscheme
@@ -209,6 +215,10 @@ Bundle 'perl-support.vim'
 " Tmux focus events
 Bundle 'tmux-plugins/vim-tmux-focus-events'
 Bundle 'tmux-plugins/vim-tmux'
+
+Plugin 'preservim/nerdtree'
+
+Plugin 'preservim/tagbar'
 
 " Installing plugins the first time
 if iCanHazVundle == 0
@@ -225,6 +235,9 @@ autocmd FileType javascript setlocal shiftwidth=2 tabstop=2 softtabstop=2
 "setup nerdtree
 noremap <Leader>n :NERDTreeToggle<cr>
 noremap <Leader>f :NERDTreeFind<cr>
+
+nmap <Leader>t :TagbarToggle<CR>
+
 let g:NERDTreeShowHidden=1
 let g:NERDTreeShowBookmarks=1
 let g:NERDTreeIgnore=['\.vim$', '\~$', '\.git$', '\.DS_Store', '\.pyc$', '\.pyo$']
@@ -263,7 +276,7 @@ imap <M-Down> <ESC><c-w>j
 "setup tasklist
 " show pending tasks list
 " map <Leader>t :TaskList<CR>
-map <Leader>t :TaskListToggle<CR>
+map <Leader>l :TaskListToggle<CR>
 " map <Leader>t <Plug>TaskListToggle
 " show task list window on the bottom
 let g:tlWindowPosition = 1
@@ -294,22 +307,22 @@ nmap ,wR :RecurGrep <cword><CR>
 nmap ,wr :RecurGrepFast <cword><CR>
 
 "setup pymode
-let g:pymode_lint_on_write = 0 "do not autolint on write
-autocmd FileType python map <buffer> <leader>8 :PymodeLint<CR>
-let g:pymode_lint_ignore = ''		"rules to ignore (example: 'E501,W293')
-let g:pymode_lint_message = 1		"show error message
-let g:pymode_lint_signs = 1			"add error icons etc
-let g:pymode_lint_cwindow = 1		"auto open cwindow(quickfix)
-let g:pymode_folding = 0			"don't fold python code on open
-let g:pymode_rope = 0				"don't use rope
-let g:pymode_virtualenv = 0			" ..same with virtualenv
-let g:pymode_rope_goto_definition_bind = ',d'
-let g:pymode_rope_goto_definition_cmd = 'e'
-nmap ,D :tab split<CR>:PymodePython rope.goto()<CR>
-nmap ,o :RopeFindOccurrences<CR>
+"let g:pymode_lint_on_write = 0 "do not autolint on write
+"autocmd FileType python map <buffer> <leader>8 :PymodeLint<CR>
+"let g:pymode_lint_ignore = ''		"rules to ignore (example: 'E501,W293')
+"let g:pymode_lint_message = 1		"show error message
+"let g:pymode_lint_signs = 1			"add error icons etc
+"let g:pymode_lint_cwindow = 1		"auto open cwindow(quickfix)
+"let g:pymode_folding = 0			"don't fold python code on open
+"let g:pymode_rope = 0				"don't use rope
+"let g:pymode_virtualenv = 0			" ..same with virtualenv
+"let g:pymode_rope_goto_definition_bind = ',d'
+"let g:pymode_rope_goto_definition_cmd = 'e'
+"nmap ,D :tab split<CR>:PymodePython rope.goto()<CR>
+"nmap ,o :RopeFindOccurrences<CR>
 
 "setup pyflakes
-let g:pyflakes_use_quickfix = 0		"do not overwrite quickfix list
+"let g:pyflakes_use_quickfix = 0		"do not overwrite quickfix list
 
 "setup tabman
 let g:tabman_toggle = 'tl'
@@ -325,8 +338,8 @@ endif
 
 "colors for gvim
 if has('gui_running')
-	colorscheme wombat
-	set guifont=Source\ Code\ Pro\ for\ Powerline\ Semibold\ 10
+	colorscheme slate
+	set guifont=Droid\ Sans\ Mono\ Slashed\ for\ Powerline\ Regular\ 8
 endif
 
 
@@ -481,6 +494,7 @@ endfunction
 command! -bar RangerChooser call RangeChooser()
 nnoremap <leader>r :<C-U>RangerChooser<CR>
 
+noremap <Leader>p <Esc>:w<CR>:!clear;python3 %<CR>
 "setup statusline using airline and gitgutter
 "set statusline=%!airline#statusline(1)
 "set statusline+=%{GitStatus()}

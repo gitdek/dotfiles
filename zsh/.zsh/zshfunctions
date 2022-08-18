@@ -186,13 +186,13 @@ function randpw() {
 
 # MISC: zurl() create small urls via tinyurl.com not using the API.
 function zurl() {
-	# go get github.com/ericchiang/pup
+	# go install github.com/ericchiang/pup@latest
 	if hash curl && hash pup; then
 		curl -L -s 'https://tinyurl.com/create.php' \
 			--data-raw "source=create&url=$@&alias=" \
 			| pup '#copy_div attr{href}'
 	else
-		echo "please make sure curl and pup are installed" >&2
+		echo "please make sure curl and pup are installed: go install github.com/ericchiang/pup@latest" >&2
 		return 1
 	fi
 }
