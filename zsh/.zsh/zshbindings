@@ -15,5 +15,10 @@ bindkey '^N' run-with-sudo
 zle -N autosuggest-tab
 
 bindkey '^T' autosuggest-toggle
+
+# bind ctrl+f
 bindkey '^f' vi-forward-blank-word
+
+# bind ctrl + space to accept the current suggestion.
+bindkey '^ ' autosuggest-accept
 

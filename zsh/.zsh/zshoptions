@@ -265,6 +265,7 @@ setopt EXTENDEDHISTORY
 setopt shortloops
 
 
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#ff00ff,bg=cyan,bold,underline"
 
 export AUTOSUGGESTION_ACCEPT_RIGHT_ARROW=1
 export AUTOSUGGESTION_HIGHLIGHT_COLOR="fg=7"
